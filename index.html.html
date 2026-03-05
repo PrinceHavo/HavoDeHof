@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1920">
+<title>Roosterwijzigingen – De Hof</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pink:    #e91e8c;
+    --yellow:  #f5c500;
+    --cyan:    #00b4d8;
+    --green:   #4caf50;
+    --orange:  #ff6b35;
+    --bg:      #0d0f14;
+    --surface: #161922;
+    --border:  rgba(255,255,255,0.07);
+    --text:    #f0f2f8;
+    --muted:   rgba(240,242,248,0.45);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: 1920px; height: 1080px;
+    overflow: hidden;
+    background: var(--bg);
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+  }
+
+  /* ── Animated background ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse 600px 400px at 15% 50%, rgba(233,30,140,0.08) 0%, transparent 70%),
+      radial-gradient(ellipse 500px 350px at 85% 30%, rgba(0,180,216,0.07) 0%, transparent 70%),
+      radial-gradient(ellipse 400px 300px at 50% 90%, rgba(245,197,0,0.05) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  /* ── Layout ── */
+  .layout {
+    display: grid;
+    grid-template-rows: 120px 1fr 60px;
+    height: 1080px;
+    padding: 0 60px;
+    gap: 0;
+  }
+
+  /* ── Header ── */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo-area {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .logo-img {
+    height: 72px;
+    width: auto;
+    filter: drop-shadow(0 0 20px rgba(233,30,140,0.3));
+  }
+
+  .school-name {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .school-name .havo {
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .school-name .naam {
+    font-size: 22px;
+    font-weight: 700;
+    background: linear-gradient(90deg, var(--pink), var(--cyan));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .header-center {
+    text-align: center;
+  }
+
+  .page-title {
+    font-size: 38px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+
+  .page-title span {
+    color: var(--pink);
+  }
+
+  .header-right {
+    text-align: right;
+  }
+
+  .live-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(76,175,80,0.12);
+    border: 1px solid rgba(76,175,80,0.3);
+    border-radius: 999px;
+    padding: 6px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--green);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .live-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--green);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.7); }
+  }
+
+  .datetime {
+    font-size: 28px;
+    font-weight: 300;
+    font-family: 'DM Mono', monospace;
+    color: var(--text);
+  }
+
+  .date-sub {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  /* ── Main content ── */
+  main {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    padding: 32px 0;
+    overflow: hidden;
+  }
+
+  .section {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    overflow: hidden;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-icon {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .section-icon.ziek { background: rgba(255,107,53,0.15); border: 1px solid rgba(255,107,53,0.3); }
+  .section-icon.tijd { background: rgba(0,180,216,0.12); border: 1px solid rgba(0,180,216,0.25); }
+
+  .section-label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .section-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1;
+  }
+
+  .count-badge {
+    margin-left: auto;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 4px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+  }
+
+  /* ── Cards ── */
+  .cards {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow: hidden;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 22px;
+    display: grid;
+    grid-template-columns: 56px 1fr auto;
+    align-items: center;
+    gap: 18px;
+    position: relative;
+    overflow: hidden;
+    animation: slideIn 0.5s ease both;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    border-radius: 3px 0 0 3px;
+  }
+
+  .card.ziek::before { background: var(--orange); }
+  .card.tijd::before { background: var(--cyan); }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .card-uur {
+    text-align: center;
+  }
+
+  .uur-num {
+    font-size: 28px;
+    font-weight: 700;
+    font-family: 'DM Mono', monospace;
+    line-height: 1;
+  }
+
+  .card.ziek .uur-num { color: var(--orange); }
+  .card.tijd .uur-num { color: var(--cyan); }
+
+  .uur-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .card-info {}
+
+  .card-klas {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 3px;
+  }
+
+  .card-details {
+    font-size: 13px;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .card-details .sep { color: var(--border); }
+
+  .card-vak {
+    font-weight: 500;
+    color: rgba(240,242,248,0.7);
+  }
+
+  .card-right {
+    text-align: right;
+  }
+
+  .card-soort {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .card-soort.ziek {
+    background: rgba(255,107,53,0.12);
+    color: var(--orange);
+    border: 1px solid rgba(255,107,53,0.25);
+  }
+
+  .card-soort.tijd {
+    background: rgba(0,180,216,0.1);
+    color: var(--cyan);
+    border: 1px solid rgba(0,180,216,0.2);
+  }
+
+  .card-docent {
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .arrow-change {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+  }
+
+  .arrow-change .old { color: var(--muted); text-decoration: line-through; }
+  .arrow-change .arr { color: var(--yellow); margin: 0 2px; }
+  .arrow-change .new { color: var(--text); font-weight: 600; }
+
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    gap: 12px;
+    background: var(--surface);
+    border: 1px dashed var(--border);
+    border-radius: 14px;
+    flex: 1;
+  }
+
+  .empty-icon { font-size: 32px; opacity: 0.3; }
+  .empty-text { font-size: 14px; color: var(--muted); }
+
+  /* ── Footer ── */
+  footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid var(--border);
+  }
+
+  .footer-left {
+    font-size: 12px;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .footer-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--border); }
+
+  .scroll-bar {
+    width: 300px;
+    height: 3px;
+    background: var(--border);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .scroll-progress {
+    height: 100%;
+    background: linear-gradient(90deg, var(--pink), var(--cyan));
+    border-radius: 999px;
+    width: 0%;
+    transition: width 0.3s ease;
+  }
+
+  .footer-right {
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  /* Loading state */
+  .loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    gap: 16px;
+  }
+
+  .spinner {
+    width: 40px; height: 40px;
+    border: 3px solid var(--border);
+    border-top-color: var(--pink);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .loading-text { font-size: 14px; color: var(--muted); }
+
+  /* Error state */
+  .error-state {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    height: 100%; gap: 12px;
+  }
+  .error-icon { font-size: 40px; }
+  .error-text { font-size: 15px; color: var(--orange); }
+  .error-sub { font-size: 13px; color: var(--muted); }
+
+  /* Scroll animation for long lists */
+  .cards-wrapper {
+    overflow: hidden;
+    position: relative;
+  }
+
+  .demo-note {
+    position: fixed;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(245,197,0,0.1);
+    border: 1px solid rgba(245,197,0,0.3);
+    border-radius: 999px;
+    padding: 5px 20px;
+    font-size: 11px;
+    color: var(--yellow);
+    letter-spacing: 0.08em;
+    z-index: 100;
+  }
+</style>
+</head>
+<body>
+
+<div class="layout">
+  <header>
+    <div class="logo-area">
+      <!-- Vervang src met het pad naar het echte logo -->
+      <img class="logo-img" src="logo_dehof.png" alt="De Hof"
+           onerror="this.style.display='none'; document.getElementById('fallback-logo').style.display='flex'">
+      <div id="fallback-logo" style="display:none; width:72px; height:72px; background:linear-gradient(135deg,var(--pink),var(--cyan)); border-radius:14px; align-items:center; justify-content:center; font-size:28px; font-weight:700;">H</div>
+      <div class="school-name">
+        <span class="havo">Havo</span>
+        <span class="naam">De Hof</span>
+        <span style="font-size:11px; color:var(--muted); margin-top:2px;">Oog voor talent</span>
+      </div>
+    </div>
+
+    <div class="header-center">
+      <div class="page-title">Rooster<span>wijzigingen</span></div>
+    </div>
+
+    <div class="header-right">
+      <div class="live-badge"><div class="live-dot"></div>Live</div>
+      <div class="datetime" id="clock">--:--</div>
+      <div class="date-sub" id="datestr">--</div>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <div class="loading">
+      <div class="spinner"></div>
+      <div class="loading-text">Roosterwijzigingen ophalen…</div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-left">
+      <span>Zermelo</span>
+      <div class="footer-dot"></div>
+      <span id="last-update">Laatste update: --:--</span>
+      <div class="footer-dot"></div>
+      <span id="school-week">Week --</span>
+    </div>
+    <div class="scroll-bar"><div class="scroll-progress" id="progress-bar"></div></div>
+    <div class="footer-right" id="footer-count">-- wijzigingen vandaag</div>
+  </footer>
+</div>
+
+<div class="demo-note" id="demo-note">⚡ Demo modus – vervang TOKEN en SCHOOL met echte gegevens</div>
+
+<script>
+// ── CONFIG ── Pas dit aan ──────────────────────────────────────
+const ZERMELO_SCHOOL = 'scmoost';               // jouw Zermelo schoolnaam
+const ZERMELO_TOKEN  = 'ef1lph3mant12ovc671p5jj5qg'; // token na OAuth
+const REFRESH_MS     = 5 * 60 * 1000;           // elke 5 min verversen
+const DEMO_MODE      = false;                    // zet op false als je echte token hebt
+// ──────────────────────────────────────────────────────────────
+
+const DAGEN = ['zo','ma','di','wo','do','vr','za'];
+const MAANDEN = ['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];
+
+// ── Clock ──
+function updateClock() {
+  const now = new Date();
+  const h = String(now.getHours()).padStart(2,'0');
+  const m = String(now.getMinutes()).padStart(2,'0');
+  document.getElementById('clock').textContent = `${h}:${m}`;
+
+  const dag = DAGEN[now.getDay()];
+  const d = now.getDate();
+  const mnd = MAANDEN[now.getMonth()];
+  document.getElementById('datestr').textContent = `${dag} ${d} ${mnd} ${now.getFullYear()}`;
+
+  // Week number
+  const onejan = new Date(now.getFullYear(),0,1);
+  const week = Math.ceil((((now - onejan) / 86400000) + onejan.getDay() + 1) / 7);
+  document.getElementById('school-week').textContent = `Week ${week}`;
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ── Demo data ──
+function getDemoData() {
+  const today = new Date();
+  const d = today.getDate();
+  const m = today.getMonth()+1;
+  const dagStr = `${DAGEN[today.getDay()]} ${d}/${m}`;
+
+  return [
+    {
+      soort: 'ziek',
+      uur: 2,
+      klas: '4H2',
+      vak: 'Nederlands',
+      docent: 'mevr. Janssen',
+      lokaal: 'H204',
+      opmerking: 'Les vervalt',
+      datum: dagStr
+    },
+    {
+      soort: 'ziek',
+      uur: 4,
+      klas: '3H1',
+      vak: 'Wiskunde',
+      docent: 'dhr. Pietersen',
+      lokaal: 'H301',
+      opmerking: 'Les vervalt',
+      datum: dagStr
+    },
+    {
+      soort: 'ziek',
+      uur: 6,
+      klas: '5H3',
+      vak: 'Biologie',
+      docent: 'mevr. De Vries',
+      lokaal: 'H410',
+      opmerking: 'Les vervalt',
+      datum: dagStr
+    },
+    {
+      soort: 'tijd',
+      uur: 3,
+      uurNieuw: 5,
+      klas: 'LH4B',
+      vak: 'Engels',
+      docent: 'dhr. Williams',
+      lokaal: 'H502',
+      opmerking: 'Tijdwijziging',
+      datum: dagStr
+    },
+    {
+      soort: 'tijd',
+      uur: 1,
+      uurNieuw: 2,
+      klas: 'LH2B',
+      vak: 'Geschiedenis',
+      docent: 'mevr. Bakker',
+      lokaal: 'H103',
+      opmerking: 'Tijdwijziging',
+      datum: dagStr
+    },
+    {
+      soort: 'tijd',
+      uur: 7,
+      uurNieuw: 8,
+      klas: 'LH5.NAT1',
+      vak: 'Natuurkunde',
+      docent: 'dhr. Smit',
+      lokaal: 'H401',
+      opmerking: 'Tijdwijziging',
+      datum: dagStr
+    },
+  ];
+}
+
+// ── Fetch Zermelo ──
+async function fetchZermelo() {
+  if (DEMO_MODE || ZERMELO_TOKEN === 'JOUW_ACCESS_TOKEN_HIER') {
+    return getDemoData();
+  }
+
+  document.getElementById('demo-note').style.display = 'none';
+
+  const now = Math.floor(Date.now() / 1000);
+  const end = now + 86400;
+
+  const url = `https://${ZERMELO_SCHOOL}.zportal.nl/api/v3/appointments?` +
+    `start=${now}&end=${end}&modifiedSinceLastSync=false&valid=true` +
+    `&fields=id,start,end,startTimeSlot,endTimeSlot,subjects,teachers,groups,locations,cancelled,changeDescription,startTimeChanged,endTimeChanged,teacherChanged`;
+
+  const resp = await fetch(url, {
+    headers: { 'Authorization': `Bearer ${ZERMELO_TOKEN}` }
+  });
+
+  if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+  const json = await resp.json();
+
+  const appts = json.response?.data || [];
+  const result = [];
+
+  for (const a of appts) {
+    const isCancelled = a.cancelled === true;
+    const isTijdwijziging = a.startTimeChanged || a.endTimeChanged;
+
+    if (!isCancelled && !isTijdwijziging) continue;
+
+    const startDate = new Date(a.start * 1000);
+    const dagStr = `${DAGEN[startDate.getDay()]} ${startDate.getDate()}/${startDate.getMonth()+1}`;
+
+    result.push({
+      soort: isCancelled ? 'ziek' : 'tijd',
+      uur: a.startTimeSlot || '?',
+      uurNieuw: a.endTimeSlot || null,
+      klas: (a.groups || []).join(', ') || '–',
+      vak: (a.subjects || []).join(', ') || '–',
+      docent: (a.teachers || []).join(', ') || '–',
+      lokaal: (a.locations || []).join(', ') || '–',
+      opmerking: a.changeDescription || (isCancelled ? 'Les vervalt' : 'Tijdwijziging'),
+      datum: dagStr,
+    });
+  }
+
+  return result;
+}
+
+// ── Render ──
+function renderCard(item, delay) {
+  const isTijd = item.soort === 'tijd';
+  return `
+    <div class="card ${item.soort}" style="animation-delay:${delay}s">
+      <div class="card-uur">
+        <div class="uur-num">${item.uur}</div>
+        <div class="uur-label">uur</div>
+      </div>
+      <div class="card-info">
+        <div class="card-klas">${item.klas}</div>
+        <div class="card-details">
+          <span class="card-vak">${item.vak}</span>
+          <span class="sep">·</span>
+          <span>${item.lokaal}</span>
+          <span class="sep">·</span>
+          <span>${item.datum}</span>
+        </div>
+      </div>
+      <div class="card-right">
+        <div class="card-soort ${item.soort}">${isTijd ? 'Tijdwijziging' : 'Vervalt'}</div>
+        <div class="card-docent">${item.docent}</div>
+        ${isTijd && item.uurNieuw ? `
+          <div class="arrow-change" style="margin-top:4px;">
+            <span class="old">uur ${item.uur}</span>
+            <span class="arr">→</span>
+            <span class="new">uur ${item.uurNieuw}</span>
+          </div>
+        ` : ''}
+      </div>
+    </div>
+  `;
+}
+
+function renderSections(data) {
+  const ziek = data.filter(d => d.soort === 'ziek');
+  const tijd = data.filter(d => d.soort === 'tijd');
+
+  const renderCards = (items, type) => {
+    if (items.length === 0) return `
+      <div class="empty-state">
+        <div class="empty-icon">${type === 'ziek' ? '✓' : '✓'}</div>
+        <div class="empty-text">Geen ${type === 'ziek' ? 'ziekmeldingen' : 'tijdwijzigingen'} vandaag</div>
+      </div>`;
+    return `<div class="cards">${items.map((item,i) => renderCard(item, i * 0.07)).join('')}</div>`;
+  };
+
+  document.getElementById('main-content').innerHTML = `
+    <div class="section">
+      <div class="section-header">
+        <div class="section-icon ziek">🤒</div>
+        <div>
+          <div class="section-label">Docenten</div>
+          <div class="section-title">Ziekmeldingen</div>
+        </div>
+        <div class="count-badge">${ziek.length}</div>
+      </div>
+      ${renderCards(ziek, 'ziek')}
+    </div>
+    <div class="section">
+      <div class="section-header">
+        <div class="section-icon tijd">🕐</div>
+        <div>
+          <div class="section-label">Rooster</div>
+          <div class="section-title">Tijdwijzigingen</div>
+        </div>
+        <div class="count-badge">${tijd.length}</div>
+      </div>
+      ${renderCards(tijd, 'tijd')}
+    </div>
+  `;
+
+  const total = data.length;
+  document.getElementById('footer-count').textContent = `${total} wijziging${total !== 1 ? 'en' : ''} vandaag`;
+
+  const now = new Date();
+  document.getElementById('last-update').textContent =
+    `Laatste update: ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+}
+
+function renderError(msg) {
+  document.getElementById('main-content').innerHTML = `
+    <div class="error-state" style="grid-column:1/-1">
+      <div class="error-icon">⚠️</div>
+      <div class="error-text">Kon roosterdata niet ophalen</div>
+      <div class="error-sub">${msg}</div>
+    </div>`;
+}
+
+// ── Progress bar (visual cycle) ──
+let progressInterval;
+function startProgress() {
+  clearInterval(progressInterval);
+  const bar = document.getElementById('progress-bar');
+  let pct = 0;
+  bar.style.width = '0%';
+  progressInterval = setInterval(() => {
+    pct += 100 / (REFRESH_MS / 1000);
+    if (pct >= 100) { pct = 0; }
+    bar.style.width = pct + '%';
+  }, 1000);
+}
+
+// ── Init ──
+async function init() {
+  try {
+    const data = await fetchZermelo();
+    renderSections(data);
+    startProgress();
+  } catch(e) {
+    renderError(e.message);
+  }
+}
+
+init();
+setInterval(init, REFRESH_MS);
+</script>
+</body>
+</html>
