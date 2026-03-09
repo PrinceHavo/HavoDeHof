@@ -38,19 +38,28 @@
     pointer-events: none; z-index: 0;
   }
 
-  /* ── Stage ── */
+  /* ── Stage: clipping window ── */
   #stage {
     position: absolute; inset: 0;
     overflow: hidden;
   }
 
+  /* Track holds all pages side by side, slides left/right */
+  #track {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.7s cubic-bezier(0.77, 0, 0.18, 1);
+  }
+
   /* ── Pages ── */
   .page {
-    position: absolute; inset: 0;
+    flex: 0 0 1920px;
+    width: 1920px;
+    height: 1080px;
     display: grid;
     grid-template-rows: 108px 1fr 50px;
     padding: 0 56px;
-    z-index: 1;
   }
 
   /* ── Header ── */
@@ -221,7 +230,7 @@
 </style>
 </head>
 <body>
-<div id="stage"></div>
+<div id="stage"><div id="track"></div></div>
 
 <script>
 // ── CONFIG ──────────────────────────────────────────────────
@@ -549,29 +558,72 @@ const pageState = {
   bovenbouw: { ziekChunks: [[]], tijdChunks: [[]], ziekPage: 0, tijdPage: 0 },
 };
 
-// ── Page swap (instant, no overlap) ──
-function slideTo(newBouw) {
-  swapPage(newBouw);
-}
+// ── Track-based slider: pages sit side by side, track slides ──
+// Track always has exactly 2 pages: [current, next] or [prev, current]
+// We slide the track left/right by 1920px
 
-// Swap page instantly — single source of truth, no overlap possible
-function swapPage(bouw) {
-  const stage = document.getElementById('stage');
-  // Remove ALL existing pages first
-  stage.querySelectorAll('.page').forEach(p => p.remove());
+let trackOffset = 0; // current translateX in px (always 0 or -1920)
+
+function getTrack() { return document.getElementById('track'); }
+
+// Build both pages fresh and place current at visible position
+function mountInitial() {
+  const track = getTrack();
+  track.innerHTML = '';
+  track.style.transition = 'none';
+  track.style.transform = 'translateX(0px)';
+  trackOffset = 0;
+
+  const bouw = bouwDefs[currentBouwIdx];
   const s = pageState[bouw];
-  const newPage = buildPage(bouw, s.ziekChunks, s.tijdChunks, s.ziekPage, s.tijdPage);
-  stage.appendChild(newPage);
+  const page = buildPage(bouw, s.ziekChunks, s.tijdChunks, s.ziekPage, s.tijdPage);
+  track.appendChild(page);
   updateClocks();
 }
 
-function replaceCurrent(bouw) {
-  swapPage(bouw);
+// Slide to new bouw: append new page to right, slide track left
+function slideTo(newBouw) {
+  const track = getTrack();
+  const s = pageState[newBouw];
+  const newPage = buildPage(newBouw, s.ziekChunks, s.tijdChunks, s.ziekPage, s.tijdPage);
+
+  // Remove extra pages (keep only current)
+  while (track.children.length > 1) track.removeChild(track.lastChild);
+
+  // Reset track to show current page cleanly
+  track.style.transition = 'none';
+  track.style.transform = 'translateX(0px)';
+
+  // Append new page to the right
+  track.appendChild(newPage);
+  updateClocks();
+
+  // Force reflow so browser registers the starting position
+  track.getBoundingClientRect();
+
+  // Slide left to reveal new page
+  track.style.transition = 'transform 0.7s cubic-bezier(0.77, 0, 0.18, 1)';
+  track.style.transform = 'translateX(-1920px)';
+
+  // After animation: clean up — remove old page, reset position
+  setTimeout(() => {
+    const oldPage = track.firstChild;
+    if (oldPage && track.children.length > 1) track.removeChild(oldPage);
+    track.style.transition = 'none';
+    track.style.transform = 'translateX(0px)';
+  }, 720);
 }
 
-// Initial mount
-function mountInitial() {
-  swapPage(bouwDefs[currentBouwIdx]);
+// Replace current page in-place (no animation, for subpage flips + data refresh)
+function replaceCurrent(bouw) {
+  const track = getTrack();
+  const s = pageState[bouw];
+  const newPage = buildPage(bouw, s.ziekChunks, s.tijdChunks, s.ziekPage, s.tijdPage);
+  track.innerHTML = '';
+  track.style.transition = 'none';
+  track.style.transform = 'translateX(0px)';
+  track.appendChild(newPage);
+  updateClocks();
 }
 
 // ── Progress bar ──
