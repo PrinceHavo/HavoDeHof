@@ -29,24 +29,30 @@
     color: var(--text);
   }
 
-  /* ── Animated background ── */
   body::before {
     content: '';
     position: fixed; inset: 0;
     background:
-      radial-gradient(ellipse 600px 400px at 15% 50%, rgba(233,30,140,0.08) 0%, transparent 70%),
-      radial-gradient(ellipse 500px 350px at 85% 30%, rgba(0,180,216,0.07) 0%, transparent 70%),
-      radial-gradient(ellipse 400px 300px at 50% 90%, rgba(245,197,0,0.05) 0%, transparent 70%);
-    pointer-events: none;
+      radial-gradient(ellipse 700px 500px at 10% 50%, rgba(233,30,140,0.07) 0%, transparent 70%),
+      radial-gradient(ellipse 600px 400px at 90% 30%, rgba(0,180,216,0.06) 0%, transparent 70%);
+    pointer-events: none; z-index: 0;
   }
 
-  /* ── Layout ── */
-  .layout {
+  /* ── Pages ── */
+  .page {
+    position: absolute; inset: 0;
     display: grid;
-    grid-template-rows: 120px 1fr 60px;
-    height: 1080px;
-    padding: 0 60px;
-    gap: 0;
+    grid-template-rows: 110px 1fr 52px;
+    padding: 0 56px;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .page.active {
+    opacity: 1;
+    pointer-events: auto;
   }
 
   /* ── Header ── */
@@ -55,428 +61,309 @@
     align-items: center;
     justify-content: space-between;
     border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
   }
 
   .logo-area {
-    display: flex;
-    align-items: center;
-    gap: 24px;
+    display: flex; align-items: center; gap: 20px; min-width: 300px;
   }
 
-  .logo-img {
-    height: 72px;
-    width: auto;
-    filter: drop-shadow(0 0 20px rgba(233,30,140,0.3));
-  }
+  .logo-img { height: 64px; width: auto; filter: drop-shadow(0 0 16px rgba(233,30,140,0.3)); }
 
-  .school-name {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
+  .fallback-logo {
+    display: none; width: 64px; height: 64px;
+    background: linear-gradient(135deg, var(--pink), var(--cyan));
+    border-radius: 14px; align-items: center; justify-content: center;
+    font-size: 26px; font-weight: 700;
   }
 
   .school-name .havo {
-    font-size: 13px;
-    font-weight: 500;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--muted);
+    font-size: 11px; font-weight: 600; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--muted);
   }
 
   .school-name .naam {
-    font-size: 22px;
-    font-weight: 700;
+    font-size: 20px; font-weight: 700;
     background: linear-gradient(90deg, var(--pink), var(--cyan));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    line-height: 1.2;
   }
 
-  .header-center {
-    text-align: center;
+  .school-name .tagline { font-size: 10px; color: var(--muted); margin-top: 1px; }
+
+  .header-center { text-align: center; }
+
+  .page-title { font-size: 32px; font-weight: 700; letter-spacing: -0.02em; }
+  .page-title span { color: var(--pink); }
+
+  .page-bouw {
+    font-size: 13px; font-weight: 600; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--muted); margin-top: 4px;
   }
 
-  .page-title {
-    font-size: 38px;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    color: var(--text);
-  }
+  .page-bouw.onderbouw { color: var(--cyan); }
+  .page-bouw.bovenbouw { color: var(--yellow); }
 
-  .page-title span {
-    color: var(--pink);
-  }
-
-  .header-right {
-    text-align: right;
-  }
+  .header-right { text-align: right; min-width: 300px; }
 
   .live-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(76,175,80,0.12);
-    border: 1px solid rgba(76,175,80,0.3);
-    border-radius: 999px;
-    padding: 6px 16px;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--green);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    margin-bottom: 6px;
+    display: inline-flex; align-items: center; gap: 7px;
+    background: rgba(76,175,80,0.1); border: 1px solid rgba(76,175,80,0.25);
+    border-radius: 999px; padding: 5px 14px;
+    font-size: 11px; font-weight: 600; color: var(--green);
+    letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 5px;
   }
 
   .live-dot {
-    width: 7px; height: 7px;
-    border-radius: 50%;
-    background: var(--green);
+    width: 6px; height: 6px; border-radius: 50%; background: var(--green);
     animation: pulse 2s ease-in-out infinite;
   }
 
   @keyframes pulse {
     0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.4; transform: scale(0.7); }
+    50%       { opacity: 0.3; transform: scale(0.6); }
   }
 
-  .datetime {
-    font-size: 28px;
-    font-weight: 300;
-    font-family: 'DM Mono', monospace;
-    color: var(--text);
+  .datetime { font-size: 26px; font-weight: 300; font-family: 'DM Mono', monospace; }
+  .date-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  /* ── Page indicator ── */
+  .page-dots {
+    display: flex; gap: 6px; align-items: center; justify-content: center;
+    margin-top: 6px;
   }
 
-  .date-sub {
-    font-size: 13px;
-    color: var(--muted);
-    margin-top: 2px;
+  .page-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--border); transition: background 0.4s;
   }
 
-  /* ── Main content ── */
+  .page-dot.active { background: var(--pink); }
+
+  /* ── Main ── */
   main {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 32px;
-    padding: 32px 0;
+    gap: 28px;
+    padding: 24px 0;
     overflow: hidden;
+    min-height: 0;
   }
 
-  .section {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    overflow: hidden;
+  /* ── Column ── */
+  .col {
+    display: flex; flex-direction: column;
+    overflow: hidden; min-height: 0;
   }
 
-  .section-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
+  .col-header {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 16px; flex-shrink: 0;
   }
 
-  .section-icon {
-    width: 40px; height: 40px;
-    border-radius: 10px;
+  .col-icon {
+    width: 38px; height: 38px; border-radius: 10px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 18px;
-    flex-shrink: 0;
+    font-size: 16px; flex-shrink: 0;
   }
 
-  .section-icon.ziek { background: rgba(255,107,53,0.15); border: 1px solid rgba(255,107,53,0.3); }
-  .section-icon.tijd { background: rgba(0,180,216,0.12); border: 1px solid rgba(0,180,216,0.25); }
+  .col-icon.ziek { background: rgba(255,107,53,0.15); border: 1px solid rgba(255,107,53,0.3); }
+  .col-icon.tijd { background: rgba(0,180,216,0.12); border: 1px solid rgba(0,180,216,0.25); }
 
-  .section-label {
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--muted);
+  .col-label {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--muted);
   }
 
-  .section-title {
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--text);
-    line-height: 1;
-  }
+  .col-title { font-size: 19px; font-weight: 700; line-height: 1; }
 
-  .count-badge {
+  .count-pill {
     margin-left: auto;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 999px;
-    padding: 4px 14px;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--muted);
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 999px; padding: 3px 12px;
+    font-size: 12px; font-weight: 600; color: var(--muted);
   }
+
+  /* ── Auto-scroll container ── */
+  .scroll-outer {
+    flex: 1; min-height: 0;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .scroll-inner {
+    display: flex; flex-direction: column; gap: 14px;
+  }
+
+  /* ── Day label ── */
+  .day-label {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--muted);
+    margin-bottom: 8px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .day-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .day-label.today { color: var(--yellow); }
 
   /* ── Cards ── */
-  .cards {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    overflow: hidden;
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px 20px;
+    display: grid; grid-template-columns: 52px 1fr auto;
+    align-items: center; gap: 16px;
+    position: relative; overflow: hidden;
+    margin-bottom: 8px;
   }
 
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 18px 22px;
-    display: grid;
-    grid-template-columns: 56px 1fr auto;
-    align-items: center;
-    gap: 18px;
-    position: relative;
-    overflow: hidden;
-    animation: slideIn 0.5s ease both;
-  }
+  .card:last-child { margin-bottom: 0; }
 
   .card::before {
-    content: '';
-    position: absolute;
-    left: 0; top: 0; bottom: 0;
-    width: 3px;
-    border-radius: 3px 0 0 3px;
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 3px; border-radius: 3px 0 0 3px;
   }
 
   .card.ziek::before { background: var(--orange); }
   .card.tijd::before { background: var(--cyan); }
 
-  @keyframes slideIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  .card-uur {
-    text-align: center;
-  }
+  .card-uur { text-align: center; }
 
   .uur-num {
-    font-size: 28px;
-    font-weight: 700;
-    font-family: 'DM Mono', monospace;
-    line-height: 1;
+    font-size: 24px; font-weight: 700;
+    font-family: 'DM Mono', monospace; line-height: 1;
   }
 
   .card.ziek .uur-num { color: var(--orange); }
   .card.tijd .uur-num { color: var(--cyan); }
 
   .uur-label {
-    font-size: 10px;
-    font-weight: 500;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-top: 2px;
+    font-size: 9px; font-weight: 500; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--muted); margin-top: 2px;
   }
 
-  .card-info {}
-
-  .card-klas {
-    font-size: 17px;
+  /* Docent naam groot */
+  .card-docent-naam {
+    font-size: 20px;
     font-weight: 700;
     color: var(--text);
-    margin-bottom: 3px;
+    margin-bottom: 4px;
+    line-height: 1.1;
   }
 
-  .card-details {
+  .card-klas {
     font-size: 13px;
     color: var(--muted);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
+    display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
   }
 
-  .card-details .sep { color: var(--border); }
+  .card-vak { font-weight: 500; color: rgba(240,242,248,0.65); }
+  .sep { color: rgba(255,255,255,0.15); }
 
-  .card-vak {
-    font-weight: 500;
-    color: rgba(240,242,248,0.7);
-  }
-
-  .card-right {
-    text-align: right;
-  }
+  .card-right { text-align: right; flex-shrink: 0; }
 
   .card-soort {
-    display: inline-block;
-    padding: 4px 12px;
-    border-radius: 999px;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    margin-bottom: 6px;
+    display: inline-block; padding: 3px 10px; border-radius: 999px;
+    font-size: 10px; font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; margin-bottom: 5px;
   }
 
-  .card-soort.ziek {
-    background: rgba(255,107,53,0.12);
-    color: var(--orange);
-    border: 1px solid rgba(255,107,53,0.25);
-  }
+  .card-soort.ziek { background: rgba(255,107,53,0.12); color: var(--orange); border: 1px solid rgba(255,107,53,0.25); }
+  .card-soort.tijd { background: rgba(0,180,216,0.1); color: var(--cyan); border: 1px solid rgba(0,180,216,0.2); }
 
-  .card-soort.tijd {
-    background: rgba(0,180,216,0.1);
-    color: var(--cyan);
-    border: 1px solid rgba(0,180,216,0.2);
-  }
+  .card-groep { font-size: 11px; color: var(--muted); }
 
-  .card-docent {
-    font-size: 12px;
-    color: var(--muted);
-  }
-
-  .arrow-change {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-family: 'DM Mono', monospace;
-    font-size: 13px;
-  }
-
-  .arrow-change .old { color: var(--muted); text-decoration: line-through; }
-  .arrow-change .arr { color: var(--yellow); margin: 0 2px; }
-  .arrow-change .new { color: var(--text); font-weight: 600; }
-
+  /* ── Empty ── */
   .empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 40px;
-    gap: 12px;
-    background: var(--surface);
-    border: 1px dashed var(--border);
-    border-radius: 14px;
-    flex: 1;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 48px 24px; gap: 10px;
+    background: var(--surface); border: 1px dashed var(--border);
+    border-radius: 14px; flex: 1;
   }
 
-  .empty-icon { font-size: 32px; opacity: 0.3; }
-  .empty-text { font-size: 14px; color: var(--muted); }
+  .empty-icon { font-size: 28px; opacity: 0.25; }
+  .empty-text { font-size: 13px; color: var(--muted); }
 
-  /* ── Footer ── */
-  footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-top: 1px solid var(--border);
-  }
-
-  .footer-left {
-    font-size: 12px;
-    color: var(--muted);
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .footer-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--border); }
-
-  .scroll-bar {
-    width: 300px;
-    height: 3px;
-    background: var(--border);
-    border-radius: 999px;
-    overflow: hidden;
-  }
-
-  .scroll-progress {
-    height: 100%;
-    background: linear-gradient(90deg, var(--pink), var(--cyan));
-    border-radius: 999px;
-    width: 0%;
-    transition: width 0.3s ease;
-  }
-
-  .footer-right {
-    font-size: 12px;
-    color: var(--muted);
-  }
-
-  /* Loading state */
+  /* ── Loading / Error ── */
   .loading {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    gap: 16px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    height: 100%; gap: 16px; grid-column: 1/-1;
   }
 
   .spinner {
-    width: 40px; height: 40px;
-    border: 3px solid var(--border);
-    border-top-color: var(--pink);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
+    width: 36px; height: 36px;
+    border: 3px solid var(--border); border-top-color: var(--pink);
+    border-radius: 50%; animation: spin 0.8s linear infinite;
   }
 
   @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text { font-size: 13px; color: var(--muted); }
 
-  .loading-text { font-size: 14px; color: var(--muted); }
-
-  /* Error state */
   .error-state {
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    height: 100%; gap: 12px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    height: 100%; gap: 10px; grid-column: 1/-1;
   }
-  .error-icon { font-size: 40px; }
-  .error-text { font-size: 15px; color: var(--orange); }
-  .error-sub { font-size: 13px; color: var(--muted); }
+  .error-icon { font-size: 36px; }
+  .error-text { font-size: 14px; color: var(--orange); }
+  .error-sub  { font-size: 12px; color: var(--muted); }
 
-  /* Scroll animation for long lists */
-  .cards-wrapper {
-    overflow: hidden;
-    position: relative;
+  /* ── Footer ── */
+  footer {
+    display: flex; align-items: center; justify-content: space-between;
+    border-top: 1px solid var(--border); flex-shrink: 0;
   }
 
-  .demo-note {
-    position: fixed;
-    bottom: 12px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(245,197,0,0.1);
-    border: 1px solid rgba(245,197,0,0.3);
-    border-radius: 999px;
-    padding: 5px 20px;
-    font-size: 11px;
-    color: var(--yellow);
-    letter-spacing: 0.08em;
-    z-index: 100;
+  .footer-left {
+    font-size: 11px; color: var(--muted);
+    display: flex; align-items: center; gap: 6px;
   }
+
+  .footer-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--border); }
+
+  .progress-bar {
+    width: 240px; height: 3px; background: var(--border);
+    border-radius: 999px; overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--pink), var(--cyan));
+    border-radius: 999px; width: 0%; transition: width 1s linear;
+  }
+
+  .footer-right { font-size: 11px; color: var(--muted); }
 </style>
 </head>
 <body>
 
-<div class="layout">
+<!-- PAGE 1: ONDERBOUW -->
+<div class="page active" id="page-onderbouw">
   <header>
     <div class="logo-area">
-      <!-- Vervang src met het pad naar het echte logo -->
       <img class="logo-img" src="logo_dehof.png" alt="De Hof"
-           onerror="this.style.display='none'; document.getElementById('fallback-logo').style.display='flex'">
-      <div id="fallback-logo" style="display:none; width:72px; height:72px; background:linear-gradient(135deg,var(--pink),var(--cyan)); border-radius:14px; align-items:center; justify-content:center; font-size:28px; font-weight:700;">H</div>
+           onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+      <div class="fallback-logo">H</div>
       <div class="school-name">
-        <span class="havo">Havo</span>
-        <span class="naam">De Hof</span>
-        <span style="font-size:11px; color:var(--muted); margin-top:2px;">Oog voor talent</span>
+        <div class="havo">Havo</div>
+        <div class="naam">De Hof</div>
+        <div class="tagline">Oog voor talent</div>
       </div>
     </div>
-
     <div class="header-center">
       <div class="page-title">Rooster<span>wijzigingen</span></div>
+      <div class="page-bouw onderbouw">▪ Onderbouw · Klas 1, 2 &amp; 3 ▪</div>
+      <div class="page-dots">
+        <div class="page-dot active" id="dot-0"></div>
+        <div class="page-dot" id="dot-1"></div>
+      </div>
     </div>
-
     <div class="header-right">
       <div class="live-badge"><div class="live-dot"></div>Live</div>
-      <div class="datetime" id="clock">--:--</div>
-      <div class="date-sub" id="datestr">--</div>
+      <div class="datetime" id="clock-ob">--:--</div>
+      <div class="date-sub" id="datestr-ob">--</div>
     </div>
   </header>
 
-  <main id="main-content">
+  <main id="main-onderbouw">
     <div class="loading">
       <div class="spinner"></div>
       <div class="loading-text">Roosterwijzigingen ophalen…</div>
@@ -487,284 +374,365 @@
     <div class="footer-left">
       <span>Zermelo</span>
       <div class="footer-dot"></div>
-      <span id="last-update">Laatste update: --:--</span>
+      <span id="last-update-ob">Laatste update: --:--</span>
       <div class="footer-dot"></div>
-      <span id="school-week">Week --</span>
+      <span id="school-week-ob">Week --</span>
     </div>
-    <div class="scroll-bar"><div class="scroll-progress" id="progress-bar"></div></div>
-    <div class="footer-right" id="footer-count">-- wijzigingen vandaag</div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-ob"></div></div>
+    <div class="footer-right" id="footer-count-ob">-- wijzigingen</div>
   </footer>
 </div>
 
-<div class="demo-note" id="demo-note">⚡ Demo modus – vervang TOKEN en SCHOOL met echte gegevens</div>
+<!-- PAGE 2: BOVENBOUW -->
+<div class="page" id="page-bovenbouw">
+  <header>
+    <div class="logo-area">
+      <img class="logo-img" src="logo_dehof.png" alt="De Hof"
+           onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+      <div class="fallback-logo">H</div>
+      <div class="school-name">
+        <div class="havo">Havo</div>
+        <div class="naam">De Hof</div>
+        <div class="tagline">Oog voor talent</div>
+      </div>
+    </div>
+    <div class="header-center">
+      <div class="page-title">Rooster<span>wijzigingen</span></div>
+      <div class="page-bouw bovenbouw">▪ Bovenbouw · Klas 4 &amp; 5 ▪</div>
+      <div class="page-dots">
+        <div class="page-dot" id="dot-b0"></div>
+        <div class="page-dot active" id="dot-b1"></div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="live-badge"><div class="live-dot"></div>Live</div>
+      <div class="datetime" id="clock-bb">--:--</div>
+      <div class="date-sub" id="datestr-bb">--</div>
+    </div>
+  </header>
+
+  <main id="main-bovenbouw">
+    <div class="loading">
+      <div class="spinner"></div>
+      <div class="loading-text">Roosterwijzigingen ophalen…</div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-left">
+      <span>Zermelo</span>
+      <div class="footer-dot"></div>
+      <span id="last-update-bb">Laatste update: --:--</span>
+      <div class="footer-dot"></div>
+      <span id="school-week-bb">Week --</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-bb"></div></div>
+    <div class="footer-right" id="footer-count-bb">-- wijzigingen</div>
+  </footer>
+</div>
 
 <script>
-// ── CONFIG ── Pas dit aan ──────────────────────────────────────
-const ZERMELO_SCHOOL = 'scmoost';               // jouw Zermelo schoolnaam
-const ZERMELO_TOKEN  = 'fkhgkitt0an0snir35c1ed75ls'; // token na OAuth
-const REFRESH_MS     = 5 * 60 * 1000;           // elke 5 min verversen
-const DEMO_MODE      = false;                    // zet op false als je echte token hebt
-// ──────────────────────────────────────────────────────────────
+// ── CONFIG ────────────────────────────────────────────────────
+const SCHOOL        = 'scmoost';
+const TOKEN         = 'fkhgkitt0an0snir35c1ed75ls';
+const PROXY         = 'https://zermelo-proxy.peoy.workers.dev';
+const REFRESH_MS    = 5 * 60 * 1000;   // data refresh
+const PAGE_SWITCH_S = 20;              // seconden per pagina
+const DAGEN_AHEAD   = 3;               // vandaag + 3 extra dagen
 
-const DAGEN = ['zo','ma','di','wo','do','vr','za'];
-const MAANDEN = ['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];
+// Onderbouw = klassen die beginnen met 1, 2, 3 (of cg1, pb2, etc.)
+// Bovenbouw = klassen die beginnen met 4, 5
+function isBovenbouw(klas) {
+  return /^[45]/i.test(klas.trim()) || /[^a-z][45]/i.test(klas.trim());
+}
+
+function klasBouw(klasStr) {
+  const klassen = klasStr.split(',').map(s => s.trim()).filter(Boolean);
+  // Return the bouw of the first klas
+  if (klassen.length === 0) return 'onbekend';
+  const k = klassen[0];
+  // Check if any digit in the klas name is 4 or 5 (first digit found)
+  const match = k.match(/(\d)/);
+  if (!match) return 'onbekend';
+  const num = parseInt(match[1]);
+  return num >= 4 ? 'bovenbouw' : 'onderbouw';
+}
+// ─────────────────────────────────────────────────────────────
+
+const KORT = ['zo','ma','di','wo','do','vr','za'];
+const LANG = ['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag'];
+const MND  = ['januari','februari','maart','april','mei','juni',
+              'juli','augustus','september','oktober','november','december'];
 
 // ── Clock ──
-function updateClock() {
-  const now = new Date();
-  const h = String(now.getHours()).padStart(2,'0');
-  const m = String(now.getMinutes()).padStart(2,'0');
-  document.getElementById('clock').textContent = `${h}:${m}`;
+function updateClocks() {
+  const n = new Date();
+  const time = `${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`;
+  const date = `${KORT[n.getDay()]} ${n.getDate()} ${MND[n.getMonth()]} ${n.getFullYear()}`;
 
-  const dag = DAGEN[now.getDay()];
-  const d = now.getDate();
-  const mnd = MAANDEN[now.getMonth()];
-  document.getElementById('datestr').textContent = `${dag} ${d} ${mnd} ${now.getFullYear()}`;
+  document.getElementById('clock-ob').textContent = time;
+  document.getElementById('clock-bb').textContent = time;
+  document.getElementById('datestr-ob').textContent = date;
+  document.getElementById('datestr-bb').textContent = date;
 
-  // Week number
-  const onejan = new Date(now.getFullYear(),0,1);
-  const week = Math.ceil((((now - onejan) / 86400000) + onejan.getDay() + 1) / 7);
-  document.getElementById('school-week').textContent = `Week ${week}`;
+  const d = new Date(Date.UTC(n.getFullYear(), n.getMonth(), n.getDate()));
+  const dn = d.getUTCDay() || 7;
+  d.setUTCDate(d.getUTCDate() + 4 - dn);
+  const y0 = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+  const w = Math.ceil((((d - y0) / 86400000) + 1) / 7);
+  document.getElementById('school-week-ob').textContent = `Week ${w}`;
+  document.getElementById('school-week-bb').textContent = `Week ${w}`;
 }
-setInterval(updateClock, 1000);
-updateClock();
+setInterval(updateClocks, 1000);
+updateClocks();
 
-// ── Demo data ──
-function getDemoData() {
-  const today = new Date();
-  const d = today.getDate();
-  const m = today.getMonth()+1;
-  const dagStr = `${DAGEN[today.getDay()]} ${d}/${m}`;
-
-  return [
-    {
-      soort: 'ziek',
-      uur: 2,
-      klas: '4H2',
-      vak: 'Nederlands',
-      docent: 'mevr. Janssen',
-      lokaal: 'H204',
-      opmerking: 'Les vervalt',
-      datum: dagStr
-    },
-    {
-      soort: 'ziek',
-      uur: 4,
-      klas: '3H1',
-      vak: 'Wiskunde',
-      docent: 'dhr. Pietersen',
-      lokaal: 'H301',
-      opmerking: 'Les vervalt',
-      datum: dagStr
-    },
-    {
-      soort: 'ziek',
-      uur: 6,
-      klas: '5H3',
-      vak: 'Biologie',
-      docent: 'mevr. De Vries',
-      lokaal: 'H410',
-      opmerking: 'Les vervalt',
-      datum: dagStr
-    },
-    {
-      soort: 'tijd',
-      uur: 3,
-      uurNieuw: 5,
-      klas: 'LH4B',
-      vak: 'Engels',
-      docent: 'dhr. Williams',
-      lokaal: 'H502',
-      opmerking: 'Tijdwijziging',
-      datum: dagStr
-    },
-    {
-      soort: 'tijd',
-      uur: 1,
-      uurNieuw: 2,
-      klas: 'LH2B',
-      vak: 'Geschiedenis',
-      docent: 'mevr. Bakker',
-      lokaal: 'H103',
-      opmerking: 'Tijdwijziging',
-      datum: dagStr
-    },
-    {
-      soort: 'tijd',
-      uur: 7,
-      uurNieuw: 8,
-      klas: 'LH5.NAT1',
-      vak: 'Natuurkunde',
-      docent: 'dhr. Smit',
-      lokaal: 'H401',
-      opmerking: 'Tijdwijziging',
-      datum: dagStr
-    },
-  ];
+// ── Helpers ──
+function dayKey(ts) {
+  const d = new Date(ts * 1000);
+  return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
 }
 
-// ── Fetch Zermelo ──
-async function fetchZermelo() {
-  if (DEMO_MODE || ZERMELO_TOKEN === 'JOUW_ACCESS_TOKEN_HIER') {
-    return getDemoData();
-  }
+function startOfDayMs(offsetDays = 0) {
+  const d = new Date();
+  d.setHours(0,0,0,0);
+  d.setDate(d.getDate() + offsetDays);
+  return d.getTime();
+}
 
-  document.getElementById('demo-note').style.display = 'none';
-
-  const now = Math.floor(Date.now() / 1000);
-  const end = now + 86400;
-
-  const url = `https://zermelo-proxy.peoy.workers.dev?school=${ZERMELO_SCHOOL}&token=${ZERMELO_TOKEN}`;
-
-  const resp = await fetch(url);
-
+// ── Fetch ──
+async function fetchData() {
+  const resp = await fetch(`${PROXY}?school=${SCHOOL}&token=${TOKEN}`);
   if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
   const json = await resp.json();
-
-  const appts = json.response?.data || [];
-  const result = [];
-
-  for (const a of appts) {
-    const isCancelled = a.cancelled === true;
-    const isTijdwijziging = a.startTimeChanged || a.endTimeChanged;
-
-    if (!isCancelled && !isTijdwijziging) continue;
-
-    const startDate = new Date(a.start * 1000);
-    const dagStr = `${DAGEN[startDate.getDay()]} ${startDate.getDate()}/${startDate.getMonth()+1}`;
-
-    result.push({
-      soort: isCancelled ? 'ziek' : 'tijd',
-      uur: a.startTimeSlot || '?',
-      uurNieuw: a.endTimeSlot || null,
-      klas: (a.groups || []).join(', ') || '–',
-      vak: (a.subjects || []).join(', ') || '–',
-      docent: (a.teachers || []).join(', ') || '–',
-      lokaal: (a.locations || []).join(', ') || '–',
-      opmerking: a.changeDescription || (isCancelled ? 'Les vervalt' : 'Tijdwijziging'),
-      datum: dagStr,
-    });
-  }
-
-  return result;
+  if (json.response?.status >= 400) throw new Error(json.response.message || 'Zermelo fout');
+  return json.response?.data || [];
 }
 
-// ── Render ──
-function renderCard(item, delay) {
+// ── Parse ──
+function parse(appts) {
+  const rangeStart = startOfDayMs(0);
+  const rangeEnd   = startOfDayMs(DAGEN_AHEAD + 1);
+  const todayKey   = dayKey(Math.floor(Date.now() / 1000));
+
+  return appts
+    .filter(a => {
+      const ms = a.start * 1000;
+      return ms >= rangeStart && ms < rangeEnd;
+    })
+    .filter(a => a.cancelled === true || !!(a.changeDescription?.trim()))
+    .map(a => ({
+      soort:     a.cancelled ? 'ziek' : 'tijd',
+      uur:       a.startTimeSlot ?? '?',
+      klas:      (a.groups    || []).join(', ') || '–',
+      vak:       (a.subjects  || []).join(', ') || '–',
+      docent:    (a.teachers  || []).join(', ') || '–',
+      lokaal:    (a.locations || []).join(', ') || '–',
+      opmerking: a.changeDescription || '',
+      datum:     new Date(a.start * 1000),
+      isToday:   dayKey(a.start) === todayKey,
+      ts:        a.start,
+      bouw:      klasBouw((a.groups || []).join(', ')),
+    }))
+    .sort((a,b) => a.ts - b.ts || a.uur - b.uur);
+}
+
+// ── Render card ──
+function card(item) {
   const isTijd = item.soort === 'tijd';
   return `
-    <div class="card ${item.soort}" style="animation-delay:${delay}s">
+    <div class="card ${item.soort}">
       <div class="card-uur">
         <div class="uur-num">${item.uur}</div>
         <div class="uur-label">uur</div>
       </div>
-      <div class="card-info">
-        <div class="card-klas">${item.klas}</div>
-        <div class="card-details">
+      <div>
+        <div class="card-docent-naam">${item.docent}</div>
+        <div class="card-klas">
           <span class="card-vak">${item.vak}</span>
           <span class="sep">·</span>
-          <span>${item.lokaal}</span>
+          <span>${item.klas}</span>
           <span class="sep">·</span>
-          <span>${item.datum}</span>
+          <span>${item.lokaal}</span>
+          ${item.opmerking ? `<span class="sep">·</span><span>${item.opmerking}</span>` : ''}
         </div>
       </div>
       <div class="card-right">
-        <div class="card-soort ${item.soort}">${isTijd ? 'Tijdwijziging' : 'Vervalt'}</div>
-        <div class="card-docent">${item.docent}</div>
-        ${isTijd && item.uurNieuw ? `
-          <div class="arrow-change" style="margin-top:4px;">
-            <span class="old">uur ${item.uur}</span>
-            <span class="arr">→</span>
-            <span class="new">uur ${item.uurNieuw}</span>
-          </div>
-        ` : ''}
+        <div class="card-soort ${item.soort}">${isTijd ? 'Wijziging' : 'Vervalt'}</div>
       </div>
-    </div>
-  `;
-}
-
-function renderSections(data) {
-  const ziek = data.filter(d => d.soort === 'ziek');
-  const tijd = data.filter(d => d.soort === 'tijd');
-
-  const renderCards = (items, type) => {
-    if (items.length === 0) return `
-      <div class="empty-state">
-        <div class="empty-icon">${type === 'ziek' ? '✓' : '✓'}</div>
-        <div class="empty-text">Geen ${type === 'ziek' ? 'ziekmeldingen' : 'tijdwijzigingen'} vandaag</div>
-      </div>`;
-    return `<div class="cards">${items.map((item,i) => renderCard(item, i * 0.07)).join('')}</div>`;
-  };
-
-  document.getElementById('main-content').innerHTML = `
-    <div class="section">
-      <div class="section-header">
-        <div class="section-icon ziek">🤒</div>
-        <div>
-          <div class="section-label">Docenten</div>
-          <div class="section-title">Ziekmeldingen</div>
-        </div>
-        <div class="count-badge">${ziek.length}</div>
-      </div>
-      ${renderCards(ziek, 'ziek')}
-    </div>
-    <div class="section">
-      <div class="section-header">
-        <div class="section-icon tijd">🕐</div>
-        <div>
-          <div class="section-label">Rooster</div>
-          <div class="section-title">Tijdwijzigingen</div>
-        </div>
-        <div class="count-badge">${tijd.length}</div>
-      </div>
-      ${renderCards(tijd, 'tijd')}
-    </div>
-  `;
-
-  const total = data.length;
-  document.getElementById('footer-count').textContent = `${total} wijziging${total !== 1 ? 'en' : ''} vandaag`;
-
-  const now = new Date();
-  document.getElementById('last-update').textContent =
-    `Laatste update: ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-}
-
-function renderError(msg) {
-  document.getElementById('main-content').innerHTML = `
-    <div class="error-state" style="grid-column:1/-1">
-      <div class="error-icon">⚠️</div>
-      <div class="error-text">Kon roosterdata niet ophalen</div>
-      <div class="error-sub">${msg}</div>
     </div>`;
 }
 
-// ── Progress bar (visual cycle) ──
+// ── Render column ──
+function renderCol(items, type) {
+  if (items.length === 0) return `
+    <div class="empty-state">
+      <div class="empty-icon">✓</div>
+      <div class="empty-text">Geen ${type === 'ziek' ? 'uitgevallen lessen' : 'tijdwijzigingen'} de komende dagen</div>
+    </div>`;
+
+  const groups = {};
+  for (const item of items) {
+    const k = dayKey(item.ts);
+    if (!groups[k]) groups[k] = { date: item.datum, isToday: item.isToday, items: [] };
+    groups[k].items.push(item);
+  }
+
+  let html = '<div class="scroll-outer"><div class="scroll-inner">';
+  for (const g of Object.values(groups)) {
+    const label = g.isToday ? 'Vandaag' : LANG[g.date.getDay()];
+    const cls   = g.isToday ? 'day-label today' : 'day-label';
+    html += `<div><div class="${cls}">${label} ${g.date.getDate()} ${MND[g.date.getMonth()]}</div>`;
+    for (const item of g.items) html += card(item);
+    html += '</div>';
+  }
+  html += '</div></div>';
+  return html;
+}
+
+// ── Render page ──
+function renderPage(data, bouw, mainId, countId, updateId) {
+  const filtered = data.filter(d => d.bouw === bouw || d.bouw === 'onbekend' && bouw === 'onderbouw');
+  const ziek = filtered.filter(d => d.soort === 'ziek');
+  const tijd = filtered.filter(d => d.soort === 'tijd');
+
+  document.getElementById(mainId).innerHTML = `
+    <div class="col">
+      <div class="col-header">
+        <div class="col-icon ziek">🚫</div>
+        <div>
+          <div class="col-label">Docenten</div>
+          <div class="col-title">Uitgevallen lessen</div>
+        </div>
+        <div class="count-pill">${ziek.length}</div>
+      </div>
+      ${renderCol(ziek, 'ziek')}
+    </div>
+    <div class="col">
+      <div class="col-header">
+        <div class="col-icon tijd">🕐</div>
+        <div>
+          <div class="col-label">Rooster</div>
+          <div class="col-title">Tijdwijzigingen</div>
+        </div>
+        <div class="count-pill">${tijd.length}</div>
+      </div>
+      ${renderCol(tijd, 'tijd')}
+    </div>`;
+
+  const total = filtered.length;
+  const now = new Date();
+  document.getElementById(countId).textContent =
+    `${total} wijziging${total !== 1 ? 'en' : ''} · vandaag + ${DAGEN_AHEAD} dagen`;
+  document.getElementById(updateId).textContent =
+    `Laatste update: ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+  // Kick off auto-scroll for each scroll-outer inside this main
+  const main = document.getElementById(mainId);
+  main.querySelectorAll('.scroll-outer').forEach(el => autoScroll(el));
+}
+
+function renderError(mainId) {
+  document.getElementById(mainId).innerHTML = `
+    <div class="error-state">
+      <div class="error-icon">⚠️</div>
+      <div class="error-text">Kon roosterdata niet ophalen</div>
+    </div>`;
+}
+
+// ── Auto-scroll (no user input, display board) ──
+function autoScroll(container) {
+  const inner = container.querySelector('.scroll-inner');
+  if (!inner) return;
+
+  const outerH = container.offsetHeight;
+  const innerH = inner.scrollHeight;
+  if (innerH <= outerH) return; // no scroll needed
+
+  let pos = 0;
+  const speed = 40; // px per second
+  let last = null;
+
+  function step(ts) {
+    if (!last) last = ts;
+    const dt = (ts - last) / 1000;
+    last = ts;
+    pos += speed * dt;
+    if (pos >= innerH - outerH) {
+      pos = innerH - outerH;
+      inner.style.transform = `translateY(-${pos}px)`;
+      // pause at bottom then reset to top
+      setTimeout(() => {
+        pos = 0;
+        inner.style.transition = 'none';
+        inner.style.transform = `translateY(0px)`;
+        setTimeout(() => { inner.style.transition = ''; last = null; requestAnimationFrame(step); }, 800);
+      }, 3000);
+      return;
+    }
+    inner.style.transform = `translateY(-${pos}px)`;
+    requestAnimationFrame(step);
+  }
+
+  inner.style.transition = 'transform 0.1s linear';
+  requestAnimationFrame(step);
+}
+
+// ── Page switching ──
+let currentPage = 0;
+const pages = ['page-onderbouw', 'page-bovenbouw'];
+
+function switchPage() {
+  document.getElementById(pages[currentPage]).classList.remove('active');
+  currentPage = (currentPage + 1) % pages.length;
+  document.getElementById(pages[currentPage]).classList.add('active');
+
+  // Sync dots
+  document.getElementById('dot-0').classList.toggle('active', currentPage === 0);
+  document.getElementById('dot-1').classList.toggle('active', currentPage === 1);
+  document.getElementById('dot-b0').classList.toggle('active', currentPage === 0);
+  document.getElementById('dot-b1').classList.toggle('active', currentPage === 1);
+}
+
+// ── Progress bar (resets each page switch) ──
 let progressInterval;
 function startProgress() {
   clearInterval(progressInterval);
-  const bar = document.getElementById('progress-bar');
+  ['progress-ob','progress-bb'].forEach(id => {
+    document.getElementById(id).style.width = '0%';
+  });
   let pct = 0;
-  bar.style.width = '0%';
   progressInterval = setInterval(() => {
-    pct += 100 / (REFRESH_MS / 1000);
-    if (pct >= 100) { pct = 0; }
-    bar.style.width = pct + '%';
+    pct += 100 / PAGE_SWITCH_S;
+    if (pct > 100) pct = 100;
+    ['progress-ob','progress-bb'].forEach(id => {
+      document.getElementById(id).style.width = pct + '%';
+    });
   }, 1000);
 }
 
-// ── Init ──
+// ── Main init ──
 async function init() {
   try {
-    const data = await fetchZermelo();
-    renderSections(data);
-    startProgress();
+    const appts = await fetchData();
+    const data  = parse(appts);
+    renderPage(data, 'onderbouw', 'main-onderbouw', 'footer-count-ob', 'last-update-ob');
+    renderPage(data, 'bovenbouw', 'main-bovenbouw', 'footer-count-bb', 'last-update-bb');
   } catch(e) {
-    renderError(e.message);
+    renderError('main-onderbouw');
+    renderError('main-bovenbouw');
   }
 }
 
+// ── Timers ──
 init();
 setInterval(init, REFRESH_MS);
+
+// Page auto-switch every PAGE_SWITCH_S seconds
+startProgress();
+setInterval(() => {
+  switchPage();
+  startProgress();
+}, PAGE_SWITCH_S * 1000);
 </script>
 </body>
 </html>
