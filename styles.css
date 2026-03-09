@@ -157,6 +157,7 @@ main {
 .uur-oud { font-size: 20px; font-weight: 800; font-family: 'DM Mono', monospace; color: var(--muted); text-decoration: line-through; opacity: 0.6; }
 .uur-pijl { font-size: 16px; color: var(--yellow); font-weight: 700; }
 .uur-nieuw { font-size: 30px; font-weight: 800; font-family: 'DM Mono', monospace; color: var(--cyan); }
+.uur-toets { font-size: 26px; line-height: 1; margin-bottom: 2px; }
 
 /* Card info */
 .card-docent-naam { font-size: 28px; font-weight: 800; color: var(--text); line-height: 1.1; margin-bottom: 6px; }
