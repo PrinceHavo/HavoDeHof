@@ -430,11 +430,10 @@ async function init() {
 // ── BOOT ─────────────────────────────────────────────────────
 mountInitial();
 startProgress(BOUW_SWITCH_S);
-// Fetch lookups first (lokalen + stamklassen), then start data
-fetchLookups().then(() => {
+// Fetch lookups first, but always start data regardless of lookup result
+fetchLookups().finally(() => {
   init();
   setInterval(init, REFRESH_MS);
-  // Refresh lookups every hour
   setInterval(fetchLookups, 60 * 60 * 1000);
 });
 </script>
