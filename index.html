@@ -86,12 +86,56 @@ function chunk(arr, n) {
 }
 
 // ── FETCH ────────────────────────────────────────────────────
-async function fetchData() {
-  const resp = await fetch(PROXY + '?school=' + SCHOOL + '&token=' + TOKEN);
+async function zermeloGet(type) {
+  const resp = await fetch(PROXY + '?school=' + SCHOOL + '&token=' + TOKEN + '&type=' + type);
   if (!resp.ok) throw new Error('HTTP ' + resp.status);
   const json = await resp.json();
   if (json.response?.status >= 400) throw new Error(json.response.message || 'Zermelo fout');
   return json.response?.data || [];
+}
+
+// Live lookups — populated by fetchLookups() at boot
+let LOKALEN    = {}; // lokaalcode -> display naam
+let STAMKLASSEN = {}; // groepcode -> stamklas naam
+
+async function fetchLookups() {
+  try {
+    const [locs, groups] = await Promise.all([
+      zermeloGet('locations'),
+      zermeloGet('groups'),
+    ]);
+    LOKALEN = {};
+    for (const l of locs) {
+      if (l.code) LOKALEN[l.code.toLowerCase()] = (l.name || l.code).toUpperCase();
+    }
+    STAMKLASSEN = {};
+    for (const g of groups) {
+      if (g.code && g.code.toLowerCase().startsWith('lh')) {
+        STAMKLASSEN[g.code.toLowerCase()] = g.code.toUpperCase();
+      }
+    }
+    console.log('Lookups geladen:', Object.keys(LOKALEN).length, 'lokalen,', Object.keys(STAMKLASSEN).length, 'stamklassen');
+  } catch(e) {
+    console.warn('Lookups ophalen mislukt, gebruik fallback:', e);
+  }
+}
+
+async function fetchData() {
+  return zermeloGet('appointments');
+}
+
+function lokaalNaam(code) {
+  if (!code) return null;
+  return LOKALEN[code.toLowerCase()] || code.toUpperCase();
+}
+
+function stamklasNaam(groupCode) {
+  const parts = (groupCode || '').toLowerCase().split('.');
+  for (const p of parts) {
+    if (STAMKLASSEN[p]) return STAMKLASSEN[p];
+    if (/^lh[1-5][a-z]$/.test(p)) return p.toUpperCase();
+  }
+  return null;
 }
 
 // ── PARSE ────────────────────────────────────────────────────
@@ -137,7 +181,10 @@ function parse(appts) {
       soort:    replacement ? 'tijd' : 'ziek',
       uur:      a.startTimeSlot ?? null,
       uurNieuw: replacement?.startTimeSlot ?? null,
-      klas:     (a.groups   ||[]).join(', ') || '–',
+      klas:     (() => {
+        const stamklassen = [...new Set((a.groups||[]).map(stamklasNaam).filter(Boolean))];
+        return stamklassen.length ? stamklassen.join(', ') : (a.groups||[]).join(', ') || '–';
+      })(),
       vak:      (a.subjects ||[]).join(', ') || '–',
       docent:   (a.teachers ||[]).map(docentNaam).join(', ') || '–',
       lokaalList,
