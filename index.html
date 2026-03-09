@@ -27,6 +27,7 @@ html, body {
   background: var(--bg);
   font-family: 'DM Sans', sans-serif;
   color: var(--text);
+  transform-origin: top left;
 }
 
 body::before {
@@ -707,6 +708,14 @@ async function init() {
 }
 
 // ── BOOT ─────────────────────────────────────────────────────
+// Auto-scale to fit any viewport (GoBright iframe / preview)
+function autoScale() {
+  const scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+  document.documentElement.style.transform = `scale(${scale})`;
+}
+autoScale();
+window.addEventListener('resize', autoScale);
+
 mountInitial();
 startProgress(BOUW_SWITCH_S);
 // Fetch lookups first, but always start data regardless of lookup result
