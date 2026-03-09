@@ -39,17 +39,14 @@ body::before {
   overflow: hidden;
 }
 
-/* ── Track: sits INSIDE stage, slides horizontally ── */
-/* Width is set dynamically in JS before animating */
+/* ── Track: always holds the current page ── */
 #track {
-  display: flex;
+  width: 1920px;
   height: 1080px;
-  /* transition applied via JS only during animation */
 }
 
-/* ── Each page is exactly one screen wide ── */
+/* ── Each page fills the stage ── */
 .page {
-  flex-shrink: 0;
   width: 1920px;
   height: 1080px;
   display: grid;
