@@ -491,19 +491,21 @@ function colHTML(items, type) {
   return `<div class="cards-grid">${items.map(cardHTML).join('')}</div>`;
 }
 
-function dotsHTML(chunks, active) {
-  return chunks.map((_,i) =>
+function dotsHTML(totalPages, active) {
+  if (totalPages <= 1) return '';
+  return Array.from({length: totalPages}, (_,i) =>
     `<div class="sub-dot${i===active?' active':''}"></div>`
   ).join('');
 }
 
-function buildPage(bouw, ziekChunks, tijdChunks, ziekPage, tijdPage) {
+function buildPage(bouw, ziekChunks, tijdChunks, subPage, _unused) {
   const isOb      = bouw === 'onderbouw';
   const bouwLabel = isOb ? 'Onderbouw · Klas 1, 2 &amp; 3' : 'Bovenbouw · Klas 4 &amp; 5';
   const bouwCls   = isOb ? 'onderbouw' : 'bovenbouw';
   const ziekCount = ziekChunks.flat().length;
   const tijdCount = tijdChunks.flat().length;
   const total     = ziekCount + tijdCount;
+  const totalPages = Math.max(ziekChunks.length, tijdChunks.length);
   const now       = new Date();
   const updateStr = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
 
@@ -541,7 +543,7 @@ function buildPage(bouw, ziekChunks, tijdChunks, ziekPage, tijdPage) {
           </div>
           <div class="count-pill">${ziekCount}</div>
         </div>
-        ${colHTML(ziekChunks[ziekPage]||[], 'ziek')}
+        ${colHTML(ziekChunks[subPage]||[], 'ziek')}
       </div>
       <div class="col">
         <div class="col-header">
@@ -552,7 +554,7 @@ function buildPage(bouw, ziekChunks, tijdChunks, ziekPage, tijdPage) {
           </div>
           <div class="count-pill">${tijdCount}</div>
         </div>
-        ${colHTML(tijdChunks[tijdPage]||[], 'tijd')}
+        ${colHTML(tijdChunks[subPage]||[], 'tijd')}
       </div>
     </main>
     <footer>
@@ -562,9 +564,9 @@ function buildPage(bouw, ziekChunks, tijdChunks, ziekPage, tijdPage) {
         <span>${updateStr}</span>
       </div>
       <div class="footer-center">
-        <div class="sub-dots">${dotsHTML(ziekChunks, ziekPage)}</div>
+        <div class="sub-dots">${dotsHTML(totalPages, subPage)}</div>
         <div class="progress-bar"><div class="progress-fill js-progress"></div></div>
-        <div class="sub-dots">${dotsHTML(tijdChunks, tijdPage)}</div>
+        ${totalPages > 1 ? `<div style="font-size:11px;color:var(--muted)">${subPage+1} / ${totalPages}</div>` : '<div></div>'}
       </div>
       <div class="footer-right">${total} wijziging${total!==1?'en':''}</div>
     </footer>`;
@@ -577,8 +579,8 @@ let currentBouwIdx = 0;
 let sliding = false;
 
 const pageState = {
-  onderbouw: { ziekChunks:[[]], tijdChunks:[[]], ziekPage:0, tijdPage:0 },
-  bovenbouw: { ziekChunks:[[]], tijdChunks:[[]], ziekPage:0, tijdPage:0 },
+  onderbouw: { ziekChunks:[[]], tijdChunks:[[]], subPage:0, totalPages:1 },
+  bovenbouw: { ziekChunks:[[]], tijdChunks:[[]], subPage:0, totalPages:1 },
 };
 
 // ── SLIDE ENGINE ─────────────────────────────────────────────
@@ -593,7 +595,7 @@ function mountInitial() {
   track.innerHTML = '';
   const bouw = bouwDefs[currentBouwIdx];
   const s = pageState[bouw];
-  track.appendChild(buildPage(bouw, s.ziekChunks, s.tijdChunks, s.ziekPage, s.tijdPage));
+  track.appendChild(buildPage(bouw, s.ziekChunks, s.tijdChunks, s.subPage, s.subPage));
   updateClocks();
 }
 
@@ -602,7 +604,7 @@ function slideTo(newBouw) {
   sliding = true;
 
   const s = pageState[newBouw];
-  const incoming = buildPage(newBouw, s.ziekChunks, s.tijdChunks, s.ziekPage, s.tijdPage);
+  const incoming = buildPage(newBouw, s.ziekChunks, s.tijdChunks, s.subPage, s.subPage);
 
   // Place incoming page off-screen to the right, on top of stage
   incoming.style.cssText = `
@@ -646,7 +648,7 @@ function replaceCurrent(bouw) {
   track.style.transform = 'translateX(0px)';
   track.innerHTML = '';
   const s = pageState[bouw];
-  track.appendChild(buildPage(bouw, s.ziekChunks, s.tijdChunks, s.ziekPage, s.tijdPage));
+  track.appendChild(buildPage(bouw, s.ziekChunks, s.tijdChunks, s.subPage, s.subPage));
   updateClocks();
 }
 
@@ -667,10 +669,12 @@ function startProgress(seconds) {
 function loadData(data) {
   bouwDefs.forEach(bouw => {
     const f = data.filter(d => d.bouw === bouw);
-    pageState[bouw].ziekChunks = chunk(f.filter(d => d.soort==='ziek'), MAX_CARDS);
-    pageState[bouw].tijdChunks = chunk(f.filter(d => d.soort==='tijd'), MAX_CARDS);
-    pageState[bouw].ziekPage = 0;
-    pageState[bouw].tijdPage = 0;
+    const ziekChunks = chunk(f.filter(d => d.soort==='ziek'), MAX_CARDS);
+    const tijdChunks = chunk(f.filter(d => d.soort==='tijd'), MAX_CARDS);
+    pageState[bouw].ziekChunks  = ziekChunks;
+    pageState[bouw].tijdChunks  = tijdChunks;
+    pageState[bouw].totalPages  = Math.max(ziekChunks.length, tijdChunks.length);
+    pageState[bouw].subPage     = 0;
   });
   replaceCurrent(bouwDefs[currentBouwIdx]);
 }
@@ -683,13 +687,14 @@ setInterval(() => {
   startProgress(BOUW_SWITCH_S);
 }, BOUW_SWITCH_S * 1000);
 
-// Subpage flip (overflow cards)
+// Subpage flip (overflow cards) — beide kolommen synchroon
 setInterval(() => {
   const bouw = bouwDefs[currentBouwIdx];
   const s = pageState[bouw];
-  s.ziekPage = (s.ziekPage + 1) % s.ziekChunks.length;
-  s.tijdPage = (s.tijdPage + 1) % s.tijdChunks.length;
-  replaceCurrent(bouw);
+  if (s.totalPages > 1) {
+    s.subPage = (s.subPage + 1) % s.totalPages;
+    replaceCurrent(bouw);
+  }
 }, SUBPAGE_S * 1000);
 
 // Data refresh
