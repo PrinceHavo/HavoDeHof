@@ -186,6 +186,12 @@
     color: var(--cyan);
   }
 
+  .dag-badge {
+    background: rgba(245,197,0,0.1); border: 1px solid rgba(245,197,0,0.3);
+    border-radius: 999px; padding: 2px 10px;
+    font-size: 12px; font-weight: 600; color: var(--yellow);
+  }
+
   .card-right { text-align: right; flex-shrink: 0; }
   .card-soort {
     display: inline-block; padding: 6px 16px; border-radius: 999px;
@@ -347,11 +353,11 @@ async function fetchData() {
   return json.response?.data || [];
 }
 
-// Parse — today only
+// Parse — today + tomorrow
 function parse(appts) {
   const now = new Date();
   const tStart = new Date(now); tStart.setHours(0,0,0,0);
-  const tEnd   = new Date(now); tEnd.setHours(23,59,59,999);
+  const tEnd   = new Date(now); tEnd.setDate(tEnd.getDate() + 1); tEnd.setHours(23,59,59,999);
 
   const today = appts.filter(a => {
     const ms = a.start * 1000;
@@ -406,6 +412,7 @@ function parse(appts) {
       opmerking: a.changeDescription || '',
       bouw:     getBouw(a.groups),
       ts:       a.start,
+      isToday:  new Date(a.start*1000).toDateString() === new Date().toDateString(),
     });
   }
 
@@ -449,6 +456,7 @@ function cardHTML(item) {
           <span class="sep">·</span>
           <span class="card-lokaal-badge">${item.lokaal}</span>
           ${item.opmerking ? `<span class="sep">·</span><span style="font-size:13px;color:var(--muted)">${item.opmerking}</span>` : ''}
+          ${!item.isToday ? '<span class="sep">·</span><span class="dag-badge">morgen</span>' : ''}
         </div>
       </div>
       <div class="card-right">
