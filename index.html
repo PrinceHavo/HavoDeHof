@@ -51,13 +51,7 @@
     grid-template-rows: 108px 1fr 50px;
     padding: 0 56px;
     z-index: 1;
-    opacity: 0;
-    pointer-events: none;
   }
-
-  .page-enter  { opacity: 0; pointer-events: none; }
-  .page-active { opacity: 1; pointer-events: auto; transition: opacity 0.6s ease; }
-  .page-exit   { opacity: 0; pointer-events: none; transition: opacity 0.6s ease; }
 
   /* ── Header ── */
   header {
@@ -355,50 +349,54 @@ function parse(appts) {
     return ms >= tStart.getTime() && ms <= tEnd.getTime();
   });
 
-  // Build lookup: key = sorted(groups) + sorted(subjects) -> non-cancelled appointments
-  const replacements = {};
+  // Build lookup by group+subject key -> list of non-cancelled appointments
+  const byKey = {};
   for (const a of today) {
     if (a.cancelled) continue;
     const key = [...(a.groups||[]), ...(a.subjects||[])].sort().join('|');
-    if (!replacements[key]) replacements[key] = [];
-    replacements[key].push(a);
+    if (!byKey[key]) byKey[key] = [];
+    byKey[key].push(a);
   }
 
   const result = [];
+  const usedIds = new Set(); // avoid duplicate replacement entries
 
   for (const a of today) {
     const isCancelled = a.cancelled === true;
-    const hasChange   = !!(a.changeDescription?.trim());
-    if (!isCancelled && !hasChange) continue;
+
+    // Only process cancelled appointments
+    if (!isCancelled) continue;
+
+    // Skip if changeDescription is only about a teacher change (geen tijdwijziging)
+    const desc = (a.changeDescription || '').toLowerCase();
+    const isOnlyDocentChange = !isCancelled && (
+      desc.includes('docent') && !desc.includes('tijd') && !desc.includes('uur')
+    );
+    if (isOnlyDocentChange) continue;
 
     // Find replacement: same group+subject, not cancelled, different timeslot
     const key = [...(a.groups||[]), ...(a.subjects||[])].sort().join('|');
-    const candidates = (replacements[key] || []).filter(r => r.startTimeSlot !== a.startTimeSlot);
+    const candidates = (byKey[key] || []).filter(r =>
+      r.startTimeSlot !== a.startTimeSlot && !usedIds.has(r.id)
+    );
     const replacement = candidates[0] || null;
+    if (replacement) usedIds.add(replacement.id);
 
-    // Determine soort: if cancelled but has a replacement at different time = tijdwijziging
-    let soort;
-    if (isCancelled && replacement) {
-      soort = 'tijd'; // cancelled + replaced at different time
-    } else if (isCancelled) {
-      soort = 'ziek'; // cancelled, no replacement
-    } else {
-      soort = 'tijd'; // has changeDescription but not cancelled
-    }
+    const soort = (isCancelled && replacement) ? 'tijd' : 'ziek';
 
     result.push({
       soort,
-      uur:       a.startTimeSlot ?? '?',
-      uurNieuw:  replacement ? replacement.startTimeSlot : null,
-      klas:      (a.groups    || []).join(', ') || '–',
-      vak:       (a.subjects  || []).join(', ') || '–',
-      docent:    (a.teachers  || []).map(docentNaam).join(', ') || '–',
-      lokaal:    replacement
-                   ? (replacement.locations || []).map(lokaalLabel).join(', ') || '–'
-                   : (a.locations || []).map(lokaalLabel).join(', ') || '–',
+      uur:      a.startTimeSlot ?? '?',
+      uurNieuw: replacement ? replacement.startTimeSlot : null,
+      klas:     (a.groups    || []).join(', ') || '–',
+      vak:      (a.subjects  || []).join(', ') || '–',
+      docent:   (a.teachers  || []).map(docentNaam).join(', ') || '–',
+      lokaal:   replacement
+                  ? (replacement.locations || []).map(lokaalLabel).join(', ') || '–'
+                  : (a.locations || []).map(lokaalLabel).join(', ') || '–',
       opmerking: a.changeDescription || '',
-      bouw:      getBouw(a.groups),
-      ts:        a.start,
+      bouw:     getBouw(a.groups),
+      ts:       a.start,
     });
   }
 
@@ -476,7 +474,7 @@ function buildPage(bouw, ziekChunks, tijdChunks, ziekPage, tijdPage) {
   const updateStr = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
 
   const div = document.createElement('div');
-  div.className = 'page page-enter';
+  div.className = 'page';
   div.dataset.bouw = bouw;
   div.innerHTML = `
     <header>
@@ -545,65 +543,35 @@ function buildPage(bouw, ziekChunks, tijdChunks, ziekPage, tijdPage) {
 // ── State ──
 const bouwDefs = ['onderbouw', 'bovenbouw'];
 let currentBouwIdx = 0;
-let isAnimating = false;
 
 const pageState = {
   onderbouw: { ziekChunks: [[]], tijdChunks: [[]], ziekPage: 0, tijdPage: 0 },
   bovenbouw: { ziekChunks: [[]], tijdChunks: [[]], ziekPage: 0, tijdPage: 0 },
 };
 
-// ── Fade transition ──
+// ── Page swap (instant, no overlap) ──
 function slideTo(newBouw) {
-  if (isAnimating) return;
-  isAnimating = true;
-
-  const stage = document.getElementById('stage');
-  const oldPage = stage.querySelector('.page');
-
-  if (oldPage) {
-    oldPage.classList.remove('page-active');
-    oldPage.classList.add('page-exit');
-  }
-
-  setTimeout(() => {
-    if (oldPage) oldPage.remove();
-    const s = pageState[newBouw];
-    const newPage = buildPage(newBouw, s.ziekChunks, s.tijdChunks, s.ziekPage, s.tijdPage);
-    stage.appendChild(newPage);
-    updateClocks();
-    newPage.getBoundingClientRect();
-    requestAnimationFrame(() => {
-      newPage.classList.remove('page-enter');
-      newPage.classList.add('page-active');
-      isAnimating = false;
-    });
-  }, 650);
+  swapPage(newBouw);
 }
 
-// Replace current page in-place (no slide, for subpage flips)
-function replaceCurrent(bouw) {
+// Swap page instantly — single source of truth, no overlap possible
+function swapPage(bouw) {
   const stage = document.getElementById('stage');
-  const oldPage = stage.querySelector('.page');
+  // Remove ALL existing pages first
+  stage.querySelectorAll('.page').forEach(p => p.remove());
   const s = pageState[bouw];
   const newPage = buildPage(bouw, s.ziekChunks, s.tijdChunks, s.ziekPage, s.tijdPage);
-  newPage.classList.remove('page-enter');
-  newPage.classList.add('page-active');
   stage.appendChild(newPage);
-  if (oldPage) oldPage.remove();
   updateClocks();
 }
 
-// Initial mount (no animation)
+function replaceCurrent(bouw) {
+  swapPage(bouw);
+}
+
+// Initial mount
 function mountInitial() {
-  const stage = document.getElementById('stage');
-  stage.innerHTML = '';
-  const bouw = bouwDefs[currentBouwIdx];
-  const s = pageState[bouw];
-  const page = buildPage(bouw, s.ziekChunks, s.tijdChunks, s.ziekPage, s.tijdPage);
-  page.classList.remove('page-enter');
-  page.classList.add('page-active');
-  stage.appendChild(page);
-  updateClocks();
+  swapPage(bouwDefs[currentBouwIdx]);
 }
 
 // ── Progress bar ──
