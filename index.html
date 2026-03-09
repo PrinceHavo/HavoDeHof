@@ -119,23 +119,29 @@ function parse(appts) {
 
   for (const a of inRange) {
     if (!a.cancelled) continue;
-
     const key = [...(a.groups||[]), ...(a.subjects||[])].sort().join('|');
     const replacement = (byKey[key]||[]).find(r =>
       r.startTimeSlot !== a.startTimeSlot && !usedIds.has(r.id)
     ) || null;
     if (replacement) usedIds.add(replacement.id);
 
+    // Lokaal: only from replacement (tijdwijziging). For ziek: no lokaal needed.
+    const lokaalList = replacement
+      ? (replacement.locations||[]).map(lokaalLabel).filter(Boolean)
+      : [];
+
+    // isToets: no startTimeSlot, or subject contains 'toets'/'schk' teacher
+    const isToets = a.startTimeSlot == null;
+
     result.push({
       soort:    replacement ? 'tijd' : 'ziek',
-      uur:      a.startTimeSlot ?? '?',
+      uur:      a.startTimeSlot ?? null,
       uurNieuw: replacement?.startTimeSlot ?? null,
       klas:     (a.groups   ||[]).join(', ') || '–',
       vak:      (a.subjects ||[]).join(', ') || '–',
       docent:   (a.teachers ||[]).map(docentNaam).join(', ') || '–',
-      lokaal:   replacement
-                  ? (replacement.locations||[]).map(lokaalLabel).join(', ') || '–'
-                  : (a.locations||[]).map(lokaalLabel).join(', ') || '–',
+      lokaalList,
+      isToets,
       opmerking: a.changeDescription || '',
       bouw:     getBouw(a.groups),
       ts:       a.start,
@@ -151,19 +157,37 @@ function cardHTML(item) {
   const isTijd = item.soort === 'tijd';
   const hasArrow = isTijd && item.uurNieuw !== null && item.uurNieuw !== item.uur;
 
-  const uurBlock = hasArrow
-    ? `<div class="card-uur">
-         <div class="uur-arrow-wrap">
-           <span class="uur-oud">${item.uur}</span>
-           <span class="uur-pijl">→</span>
-           <span class="uur-nieuw">${item.uurNieuw}</span>
-         </div>
-         <div class="uur-label">uur</div>
-       </div>`
-    : `<div class="card-uur">
-         <div class="uur-num">${item.uur}</div>
-         <div class="uur-label">uur</div>
-       </div>`;
+  // Uur block
+  let uurBlock;
+  if (item.uur === null) {
+    // Geen tijdslot — toets of activiteit
+    uurBlock = `<div class="card-uur">
+      <div class="uur-toets">📋</div>
+      <div class="uur-label">toets</div>
+    </div>`;
+  } else if (hasArrow) {
+    uurBlock = `<div class="card-uur">
+      <div class="uur-arrow-wrap">
+        <span class="uur-oud">${item.uur}</span>
+        <span class="uur-pijl">→</span>
+        <span class="uur-nieuw">${item.uurNieuw}</span>
+      </div>
+      <div class="uur-label">uur</div>
+    </div>`;
+  } else {
+    uurBlock = `<div class="card-uur">
+      <div class="uur-num">${item.uur}</div>
+      <div class="uur-label">uur</div>
+    </div>`;
+  }
+
+  // Lokaal badges — only when there are lokalen (tijdwijziging with new room)
+  const lokaalHTML = item.lokaalList.length
+    ? `<span class="sep">·</span>${item.lokaalList.map(l => `<span class="card-lokaal-badge">${l}</span>`).join(' ')}`
+    : '';
+
+  // Label rechts
+  const label = item.uur === null ? 'Toets' : (isTijd ? 'Wijziging' : 'Vervalt');
 
   return `<div class="card ${item.soort}">
     ${uurBlock}
@@ -173,14 +197,13 @@ function cardHTML(item) {
         <span class="card-vak">${item.vak}</span>
         <span class="sep">·</span>
         <span class="card-klas">${item.klas}</span>
-        <span class="sep">·</span>
-        <span class="card-lokaal-badge">${item.lokaal}</span>
+        ${lokaalHTML}
         ${item.opmerking ? `<span class="sep">·</span><span style="font-size:13px;color:var(--muted)">${item.opmerking}</span>` : ''}
         ${!item.isToday ? `<span class="sep">·</span><span class="dag-badge">morgen</span>` : ''}
       </div>
     </div>
     <div class="card-right">
-      <div class="card-soort ${item.soort}">${isTijd ? 'Wijziging' : 'Vervalt'}</div>
+      <div class="card-soort ${item.soort}">${label}</div>
     </div>
   </div>`;
 }
@@ -326,18 +349,21 @@ function slideTo(newBouw) {
   track.style.transform = 'translateX(-1920px)';
 
   setTimeout(() => {
-    // Remove old page, reset track width, reset transform — all without transition
     track.style.transition = 'none';
-    const old = track.firstElementChild;
-    if (old) track.removeChild(old);
+    // Remove all but the last child (the new page)
+    while (track.children.length > 1) track.removeChild(track.firstElementChild);
     track.style.width = '1920px';
     track.style.transform = 'translateX(0px)';
     sliding = false;
-  }, 780);
+  }, 800);
 }
 
 function replaceCurrent(bouw) {
-  // Instant swap, no animation — for subpage flips & data refresh
+  // If a slide is in progress, wait for it to finish before replacing
+  if (sliding) {
+    setTimeout(() => replaceCurrent(bouw), 100);
+    return;
+  }
   const track = getTrack();
   track.style.transition = 'none';
   track.style.width = '1920px';
