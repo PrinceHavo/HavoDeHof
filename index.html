@@ -308,16 +308,15 @@ const pageState = {
 };
 
 // ── SLIDE ENGINE ─────────────────────────────────────────────
-// The track always holds exactly ONE page at offset 0.
-// To slide: temporarily widen track to 3840px, append new page,
-// then CSS-transition translateX to -1920px, then clean up.
+// Uses a separate fixed-position overlay for the incoming page.
+// Current page stays in #track. Incoming page slides in on top.
+// Zero risk of track being empty = zero black screens.
 
-function getTrack() { return document.getElementById('track'); }
+const stage = document.getElementById('stage');
 
 function mountInitial() {
-  const track = getTrack();
+  const track = document.getElementById('track');
   track.innerHTML = '';
-  track.style.cssText = 'width:1920px; transform:translateX(0px); transition:none;';
   const bouw = bouwDefs[currentBouwIdx];
   const s = pageState[bouw];
   track.appendChild(buildPage(bouw, s.ziekChunks, s.tijdChunks, s.ziekPage, s.tijdPage));
@@ -328,45 +327,48 @@ function slideTo(newBouw) {
   if (sliding) return;
   sliding = true;
 
-  const track = getTrack();
   const s = pageState[newBouw];
-  const newPage = buildPage(newBouw, s.ziekChunks, s.tijdChunks, s.ziekPage, s.tijdPage);
+  const incoming = buildPage(newBouw, s.ziekChunks, s.tijdChunks, s.ziekPage, s.tijdPage);
 
-  // Widen track to hold both pages, reset to 0 with NO transition
-  track.style.transition = 'none';
-  track.style.width = '3840px';
-  track.style.transform = 'translateX(0px)';
-
-  // Append new page to the right
-  track.appendChild(newPage);
+  // Place incoming page off-screen to the right, on top of stage
+  incoming.style.cssText = `
+    position: absolute;
+    top: 0; left: 1920px;
+    width: 1920px; height: 1080px;
+    z-index: 10;
+    transition: none;
+  `;
+  stage.appendChild(incoming);
   updateClocks();
 
-  // Force reflow — browser must paint before we add the transition
-  track.getBoundingClientRect();
+  // Force reflow
+  incoming.getBoundingClientRect();
 
-  // Now animate left
+  // Slide both pages left simultaneously
+  const track = document.getElementById('track');
   track.style.transition = 'transform 0.75s cubic-bezier(0.77, 0, 0.18, 1)';
   track.style.transform = 'translateX(-1920px)';
+  incoming.style.transition = 'transform 0.75s cubic-bezier(0.77, 0, 0.18, 1)';
+  incoming.style.transform = 'translateX(-1920px)';
 
   setTimeout(() => {
+    // Move incoming into track, reset everything
     track.style.transition = 'none';
-    // Remove all but the last child (the new page)
-    while (track.children.length > 1) track.removeChild(track.firstElementChild);
-    track.style.width = '1920px';
     track.style.transform = 'translateX(0px)';
+    incoming.style.cssText = '';
+    track.innerHTML = '';
+    track.appendChild(incoming);
     sliding = false;
   }, 800);
 }
 
 function replaceCurrent(bouw) {
-  // If a slide is in progress, wait for it to finish before replacing
   if (sliding) {
-    setTimeout(() => replaceCurrent(bouw), 100);
+    setTimeout(() => replaceCurrent(bouw), 150);
     return;
   }
-  const track = getTrack();
+  const track = document.getElementById('track');
   track.style.transition = 'none';
-  track.style.width = '1920px';
   track.style.transform = 'translateX(0px)';
   track.innerHTML = '';
   const s = pageState[bouw];
