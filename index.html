@@ -63,7 +63,7 @@ const MND  = ['januari','februari','maart','april','mei','juni',
 function docentNaam(afk) {
   return DOCENTEN[afk?.toLowerCase()] || afk?.toUpperCase() || '–';
 }
-function lokaalLabel(code) { return code?.toUpperCase() || '–'; }
+// lokaalLabel replaced by lokaalNaam (uses live LOKALEN lookup)
 
 function updateClocks() {
   const n = new Date();
@@ -127,7 +127,7 @@ function parse(appts) {
 
     // Lokaal: only from replacement (tijdwijziging). For ziek: no lokaal needed.
     const lokaalList = replacement
-      ? (replacement.locations||[]).map(lokaalLabel).filter(Boolean)
+      ? (replacement.locations||[]).map(lokaalNaam).filter(Boolean)
       : [];
 
     // isToets: no startTimeSlot, or subject contains 'toets'/'schk' teacher
@@ -430,8 +430,13 @@ async function init() {
 // ── BOOT ─────────────────────────────────────────────────────
 mountInitial();
 startProgress(BOUW_SWITCH_S);
-init();
-setInterval(init, REFRESH_MS);
+// Fetch lookups first (lokalen + stamklassen), then start data
+fetchLookups().then(() => {
+  init();
+  setInterval(init, REFRESH_MS);
+  // Refresh lookups every hour
+  setInterval(fetchLookups, 60 * 60 * 1000);
+});
 </script>
 </body>
 </html>
