@@ -218,9 +218,9 @@ footer { display: flex; align-items: center; justify-content: space-between; bor
 .progress-fill { height: 100%; background: linear-gradient(90deg, var(--pink), var(--cyan)); border-radius: 999px; width: 0%; transition: width 1s linear; }
 .footer-right { font-size: 11px; color: var(--muted); }
 .footer-center { display: flex; align-items: center; gap: 10px; }
-.sub-dots { display: flex; gap: 5px; align-items: center; }
-.sub-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--border); transition: background 0.3s; }
-.sub-dot.active { background: var(--muted); }
+.sub-dots { display: flex; gap: 6px; align-items: center; }
+.sub-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.15); transition: background 0.3s, transform 0.3s; }
+.sub-dot.active { background: var(--pink); transform: scale(1.3); }
 
 </style>
 </head>
@@ -543,7 +543,7 @@ function buildPage(bouw, ziekChunks, tijdChunks, subPage, _unused) {
           </div>
           <div class="count-pill">${ziekCount}</div>
         </div>
-        ${colHTML(ziekChunks[subPage]||[], 'ziek')}
+        ${colHTML(ziekChunks[subPage % ziekChunks.length]||[], 'ziek')}
       </div>
       <div class="col">
         <div class="col-header">
@@ -554,7 +554,7 @@ function buildPage(bouw, ziekChunks, tijdChunks, subPage, _unused) {
           </div>
           <div class="count-pill">${tijdCount}</div>
         </div>
-        ${colHTML(tijdChunks[subPage]||[], 'tijd')}
+        ${colHTML(tijdChunks[subPage % tijdChunks.length]||[], 'tijd')}
       </div>
     </main>
     <footer>
@@ -564,9 +564,9 @@ function buildPage(bouw, ziekChunks, tijdChunks, subPage, _unused) {
         <span>${updateStr}</span>
       </div>
       <div class="footer-center">
-        <div class="sub-dots">${dotsHTML(totalPages, subPage)}</div>
+        <div class="sub-dots">${dotsHTML(totalPages, subPage % totalPages)}</div>
         <div class="progress-bar"><div class="progress-fill js-progress"></div></div>
-        ${totalPages > 1 ? `<div style="font-size:11px;color:var(--muted)">${subPage+1} / ${totalPages}</div>` : '<div></div>'}
+        ${totalPages > 1 ? `<div style="font-size:12px;font-weight:600;color:var(--muted);letter-spacing:0.05em">${(subPage % totalPages)+1} / ${totalPages}</div>` : '<div></div>'}
       </div>
       <div class="footer-right">${total} wijziging${total!==1?'en':''}</div>
     </footer>`;
