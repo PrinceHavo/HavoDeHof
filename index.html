@@ -366,13 +366,17 @@ function parse(appts) {
     return ms >= tStart.getTime() && ms <= tEnd.getTime();
   });
 
-  // Index non-cancelled by group+subject for replacement matching
-  const byKey = {};
+  // Index ALL non-cancelled appointments by group+subject+timeslot
+  const byKey      = {}; // group+subject -> list of non-cancelled
+  const byExact    = {}; // group+subject+timeslot -> non-cancelled (for same-slot replacement detection)
   for (const a of inRange) {
     if (a.cancelled) continue;
-    const key = [...(a.groups||[]), ...(a.subjects||[])].sort().join('|');
-    if (!byKey[key]) byKey[key] = [];
+    const key      = [...(a.groups||[]), ...(a.subjects||[])].sort().join('|');
+    const exactKey = key + '|' + a.startTimeSlot;
+    if (!byKey[key])       byKey[key]       = [];
+    if (!byExact[exactKey]) byExact[exactKey] = [];
     byKey[key].push(a);
+    byExact[exactKey].push(a);
   }
 
   const result  = [];
@@ -380,18 +384,24 @@ function parse(appts) {
 
   for (const a of inRange) {
     if (!a.cancelled) continue;
-    const key = [...(a.groups||[]), ...(a.subjects||[])].sort().join('|');
+
+    const key      = [...(a.groups||[]), ...(a.subjects||[])].sort().join('|');
+    const exactKey = key + '|' + a.startTimeSlot;
+
+    // Skip if there's a non-cancelled appointment at the SAME timeslot
+    // → this is a lokaal- or docentwijziging, not uitval or tijdwijziging
+    if ((byExact[exactKey]||[]).length > 0) continue;
+
+    // Look for replacement at a DIFFERENT timeslot (= echte tijdwijziging)
     const replacement = (byKey[key]||[]).find(r =>
       r.startTimeSlot !== a.startTimeSlot && !usedIds.has(r.id)
     ) || null;
     if (replacement) usedIds.add(replacement.id);
 
-    // Lokaal: only from replacement (tijdwijziging). For ziek: no lokaal needed.
     const lokaalList = replacement
       ? (replacement.locations||[]).map(lokaalNaam).filter(Boolean)
       : [];
 
-    // isToets: no startTimeSlot, or subject contains 'toets'/'schk' teacher
     const isToets = a.startTimeSlot == null;
 
     result.push({
