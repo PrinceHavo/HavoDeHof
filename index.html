@@ -231,7 +231,7 @@ footer { display: flex; align-items: center; justify-content: space-between; bor
 <script>
 // ── CONFIG ──────────────────────────────────────────────────
 const SCHOOL        = 'scmoost';
-const TOKEN         = 'fkhgkitt0an0snir35c1ed75ls';
+const TOKEN         = 'j2g2gs5cq3j40ftd203490toko';
 const PROXY         = 'https://zermelo-proxy.peoy.workers.dev';
 const REFRESH_MS    = 5 * 60 * 1000;
 const BOUW_SWITCH_S = 20;   // seconden per onderbouw/bovenbouw pagina
@@ -382,6 +382,7 @@ function parse(appts) {
 
   const result  = [];
   const usedIds = new Set();
+  let skippedExact = 0;
 
   for (const a of inRange) {
     if (!a.cancelled) continue;
@@ -391,13 +392,15 @@ function parse(appts) {
 
     // Skip if there's a non-cancelled appointment at the SAME timeslot
     // → this is a lokaal- or docentwijziging, not uitval or tijdwijziging
-    if ((byExact[exactKey]||[]).length > 0) continue;
+    if ((byExact[exactKey]||[]).length > 0) { skippedExact++; continue; }
 
     // Look for replacement at a DIFFERENT timeslot (= echte tijdwijziging)
     const replacement = (byKey[key]||[]).find(r =>
       r.startTimeSlot !== a.startTimeSlot && !usedIds.has(r.id)
     ) || null;
     if (replacement) usedIds.add(replacement.id);
+
+    const docentNamen = (a.teachers||[]).map(docentNaam).filter(Boolean);
 
     const lokaalList = replacement
       ? (replacement.locations||[]).map(lokaalNaam).filter(Boolean)
@@ -414,7 +417,7 @@ function parse(appts) {
         return stamklassen.length ? stamklassen.join(', ') : (a.groups||[]).join(', ') || '–';
       })(),
       vak:      (a.subjects ||[]).join(', ') || '–',
-      docent:   (a.teachers ||[]).map(docentNaam).join(', ') || '–',
+      docent:   docentNamen.join(', ') || '–',
       lokaalList,
       isToets,
       opmerking: a.changeDescription || '',
@@ -423,6 +426,8 @@ function parse(appts) {
       isToday:  new Date(a.start*1000).toDateString() === now.toDateString(),
     });
   }
+
+  console.log(`Parse: ${inRange.filter(a=>a.cancelled).length} cancelled → ${skippedExact} same-slot gefilterd, ${result.length} over`);
 
   return result.sort((a,b) => a.uur - b.uur || a.klas.localeCompare(b.klas));
 }
