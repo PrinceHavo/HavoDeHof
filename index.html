@@ -365,7 +365,10 @@ function parse(appts) {
 
   const inRange = appts.filter(a => {
     const ms = a.start * 1000;
-    return ms >= tStart.getTime() && ms <= tEnd.getTime();
+    const inTime = ms >= tStart.getTime() && ms <= tEnd.getTime();
+    // Alleen De Hof groepen (beginnen met 'lh')
+    const isHof = (a.groups||[]).some(g => g.toLowerCase().startsWith('lh'));
+    return inTime && isHof;
   });
 
   // Index ALL non-cancelled appointments by group+subject+timeslot
