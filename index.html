@@ -22,11 +22,12 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 html, body {
-  width: 100vw; height: 100vh;
+  width: 1920px; height: 1080px;
   overflow: hidden;
   background: var(--bg);
-  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+  font-family: 'DM Sans', sans-serif;
   color: var(--text);
+  transform-origin: top left;
 }
 
 body::before {
@@ -713,10 +714,10 @@ async function init() {
 }
 
 // &#x2500;&#x2500; BOOT &#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;
-// Auto-scale to fit any viewport (GoBright iframe / webOS)
+// Auto-scale to fit any viewport (GoBright iframe / preview)
 function autoScale() {
   const scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
-  document.getElementById('stage').style.transform = `scale(${scale})`;
+  document.documentElement.style.transform = `scale(${scale})`;
 }
 autoScale();
 window.addEventListener('resize', autoScale);
