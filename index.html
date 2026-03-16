@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=1920">
-<title>Roosterwijzigingen – De Hof</title>
+<title>Roosterwijzigingen &ndash; De Hof</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -22,12 +22,11 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 html, body {
-  width: 1920px; height: 1080px;
+  width: 100vw; height: 100vh;
   overflow: hidden;
   background: var(--bg);
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
   color: var(--text);
-  transform-origin: top left;
 }
 
 body::before {
@@ -39,22 +38,23 @@ body::before {
   pointer-events: none; z-index: 0;
 }
 
-/* ── Stage: viewport window, clips overflow ── */
+/* &#x2500;&#x2500; Stage: viewport window, clips overflow &#x2500;&#x2500; */
 #stage {
   position: absolute;
   top: 0; left: 0;
   width: 1920px;
   height: 1080px;
   overflow: hidden;
+  transform-origin: top left;
 }
 
-/* ── Track: always holds the current page ── */
+/* &#x2500;&#x2500; Track: always holds the current page &#x2500;&#x2500; */
 #track {
   width: 1920px;
   height: 1080px;
 }
 
-/* ── Each page fills the stage ── */
+/* &#x2500;&#x2500; Each page fills the stage &#x2500;&#x2500; */
 .page {
   width: 1920px;
   height: 1080px;
@@ -63,7 +63,7 @@ body::before {
   padding: 0 56px;
 }
 
-/* ── Header ── */
+/* &#x2500;&#x2500; Header &#x2500;&#x2500; */
 header {
   display: flex; align-items: center; justify-content: space-between;
   border-bottom: 1px solid var(--border); flex-shrink: 0;
@@ -107,7 +107,7 @@ header {
 .datetime { font-size: 28px; font-weight: 300; font-family: 'DM Mono', monospace; }
 .date-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
 
-/* ── Main grid ── */
+/* &#x2500;&#x2500; Main grid &#x2500;&#x2500; */
 main {
   display: grid; grid-template-columns: 1fr 1fr;
   gap: 28px; padding: 22px 0;
@@ -133,7 +133,7 @@ main {
   border-radius: 999px; padding: 3px 12px; font-size: 13px; font-weight: 600; color: var(--muted);
 }
 
-/* ── Cards ── */
+/* &#x2500;&#x2500; Cards &#x2500;&#x2500; */
 .cards-grid { display: flex; flex-direction: column; gap: 9px; flex: 1; overflow: hidden; min-height: 0; }
 
 .card {
@@ -191,7 +191,7 @@ main {
 .card-soort.ziek { background: rgba(255,107,53,0.12); color: var(--orange); border: 1px solid rgba(255,107,53,0.25); }
 .card-soort.tijd { background: rgba(0,180,216,0.1); color: var(--cyan); border: 1px solid rgba(0,180,216,0.2); }
 
-/* ── Empty ── */
+/* &#x2500;&#x2500; Empty &#x2500;&#x2500; */
 .empty-state {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   flex: 1; gap: 12px;
@@ -200,7 +200,7 @@ main {
 .empty-icon { font-size: 36px; opacity: 0.18; }
 .empty-text { font-size: 15px; color: var(--muted); }
 
-/* ── Loading / Error ── */
+/* &#x2500;&#x2500; Loading / Error &#x2500;&#x2500; */
 .loading {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   height: 100%; gap: 16px; grid-column: 1/-1;
@@ -211,7 +211,7 @@ main {
 .error-state { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 10px; grid-column: 1/-1; }
 .error-text { font-size: 15px; color: var(--orange); }
 
-/* ── Footer ── */
+/* &#x2500;&#x2500; Footer &#x2500;&#x2500; */
 footer { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--border); flex-shrink: 0; }
 .footer-left { font-size: 11px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
 .footer-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--border); }
@@ -229,7 +229,7 @@ footer { display: flex; align-items: center; justify-content: space-between; bor
 <div id="stage"><div id="track"></div></div>
 
 <script>
-// ── CONFIG ──────────────────────────────────────────────────
+// &#x2500;&#x2500; CONFIG &#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;
 const SCHOOL        = 'scmoost';
 const TOKEN         = 'j2g2gs5cq3j40ftd203490toko';
 const PROXY         = 'https://zermelo-proxy.peoy.workers.dev';
@@ -238,14 +238,14 @@ const BOUW_SWITCH_S = 20;   // seconden per onderbouw/bovenbouw pagina
 const SUBPAGE_S     = 10;   // seconden per subpagina (overflow)
 const MAX_CARDS     = 6;    // kaarten per kolom per subpagina
 
-// ── DOCENTEN ────────────────────────────────────────────────
+// &#x2500;&#x2500; DOCENTEN &#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;
 const DOCENTEN = {
   'naab': 'Mevr. Abbel',           'ftaa': 'Mevr. Akkaya',
   'waao': 'Mevr. Aktaou',          'soal': 'Dhr. Alaoui Mdaghri',
   'saag': 'Mevr. Azar Asgari',     'chba': 'Mevr. Baalla',
   'ukbs': 'Dhr. Bekdas',           'prbe': 'Dhr. de Boer',
   'lsbr': 'Dhr. den Boer',        'gybn': 'Dhr. Boissevain',
-  'elbo': 'Mevr. Boon',            'mnbe': 'Mevr. Bridié',
+  'elbo': 'Mevr. Boon',            'mnbe': 'Mevr. Bridi&eacute;',
   'jnbj': 'Dhr. Buijs',            'mtbk': 'Mevr. Bussink',
   'mnbu': 'Dhr. Buter',            'eycg': 'Dhr. Craig',
   'nydg': 'Mevr. Dahlberg',        'jugr': 'Mevr. Gerritsen',
@@ -258,7 +258,7 @@ const DOCENTEN = {
   'prpr': 'Mevr. Makhan',          'moms': 'Mevr. Markus',
   'mnmg': 'Dhr. Merkelbag',        'ayma': 'Dhr. Mostafa',
   'sesm': 'Mevr. Mowday',          'aemm': 'Mevr. Muileboom',
-  'bano': 'Mevr. Nollkämper',      'peoy': 'Dhr. Okorley',
+  'bano': 'Mevr. Nollk&auml;mper',      'peoy': 'Dhr. Okorley',
   'mnor': 'Dhr. Ombre',            'fapp': 'Mevr. Poelkamp',
   'alrd': 'Dhr. Razed',            'jaro': 'Dhr. Rook',
   'dero': 'Mevr. Roos',            'enrt': 'Dhr. Rust',
@@ -269,17 +269,17 @@ const DOCENTEN = {
   'mnvs': 'Dhr. van Straaten',     'geta': 'Mevr. Tjoe-Awie',
   'ibto': 'Dhr. Topal',            'cytl': 'Mevr. Trustfull',
   'divn': 'Mevr. Veen',            'csvn': 'Dhr. van de Ven',
-  'gnwe': 'Dhr. Wallé',            'mawf': 'Mevr. van der Werf',
+  'gnwe': 'Dhr. Wall&eacute;',            'mawf': 'Mevr. van der Werf',
   'adwa': 'Dhr. Wierstra',         'fzel': 'Dhr. van der Zel',
 };
 
-// ── HELPERS ──────────────────────────────────────────────────
+// &#x2500;&#x2500; HELPERS &#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;
 const KORT = ['zo','ma','di','wo','do','vr','za'];
 const MND  = ['januari','februari','maart','april','mei','juni',
               'juli','augustus','september','oktober','november','december'];
 
 function docentNaam(afk) {
-  return DOCENTEN[afk?.toLowerCase()] || afk?.toUpperCase() || '–';
+  return DOCENTEN[afk?.toLowerCase()] || afk?.toUpperCase() || '&ndash;';
 }
 // lokaalLabel replaced by lokaalNaam (uses live LOKALEN lookup)
 
@@ -303,7 +303,7 @@ function chunk(arr, n) {
   return out.length ? out : [[]];
 }
 
-// ── FETCH ────────────────────────────────────────────────────
+// &#x2500;&#x2500; FETCH &#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;
 async function zermeloGet(type) {
   const resp = await fetch(PROXY + '?school=' + SCHOOL + '&token=' + TOKEN + '&type=' + type);
   if (!resp.ok) throw new Error('HTTP ' + resp.status);
@@ -312,7 +312,7 @@ async function zermeloGet(type) {
   return json.response?.data || [];
 }
 
-// Live lookups — populated by fetchLookups() at boot
+// Live lookups &mdash; populated by fetchLookups() at boot
 let LOKALEN    = {}; // lokaalcode -> display naam
 let STAMKLASSEN = {}; // groepcode -> stamklas naam
 
@@ -356,7 +356,7 @@ function stamklasNaam(groupCode) {
   return null;
 }
 
-// ── PARSE ────────────────────────────────────────────────────
+// &#x2500;&#x2500; PARSE &#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;
 function parse(appts) {
   const now    = new Date();
   const tStart = new Date(now); tStart.setHours(0,0,0,0);
@@ -391,7 +391,7 @@ function parse(appts) {
     const exactKey = key + '|' + a.startTimeSlot;
 
     // Skip if there's a non-cancelled appointment at the SAME timeslot
-    // → this is a lokaal- or docentwijziging, not uitval or tijdwijziging
+    // &rarr; this is a lokaal- or docentwijziging, not uitval or tijdwijziging
     if ((byExact[exactKey]||[]).length > 0) { skippedExact++; continue; }
 
     // Look for replacement at a DIFFERENT timeslot (= echte tijdwijziging)
@@ -414,10 +414,10 @@ function parse(appts) {
       uurNieuw: replacement?.startTimeSlot ?? null,
       klas:     (() => {
         const stamklassen = [...new Set((a.groups||[]).map(stamklasNaam).filter(Boolean))];
-        return stamklassen.length ? stamklassen.join(', ') : (a.groups||[]).join(', ') || '–';
+        return stamklassen.length ? stamklassen.join(', ') : (a.groups||[]).join(', ') || '&ndash;';
       })(),
-      vak:      (a.subjects ||[]).join(', ') || '–',
-      docent:   docentNamen.join(', ') || '–',
+      vak:      (a.subjects ||[]).join(', ') || '&ndash;',
+      docent:   docentNamen.join(', ') || '&ndash;',
       lokaalList,
       isToets,
       opmerking: a.changeDescription || '',
@@ -427,12 +427,12 @@ function parse(appts) {
     });
   }
 
-  console.log(`Parse: ${inRange.filter(a=>a.cancelled).length} cancelled → ${skippedExact} same-slot gefilterd, ${result.length} over`);
+  console.log(`Parse: ${inRange.filter(a=>a.cancelled).length} cancelled &rarr; ${skippedExact} same-slot gefilterd, ${result.length} over`);
 
   return result.sort((a,b) => a.uur - b.uur || a.klas.localeCompare(b.klas));
 }
 
-// ── RENDER ───────────────────────────────────────────────────
+// &#x2500;&#x2500; RENDER &#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;
 function cardHTML(item) {
   const isTijd = item.soort === 'tijd';
   const hasArrow = isTijd && item.uurNieuw !== null && item.uurNieuw !== item.uur;
@@ -440,16 +440,16 @@ function cardHTML(item) {
   // Uur block
   let uurBlock;
   if (item.uur === null) {
-    // Geen tijdslot — toets of activiteit
+    // Geen tijdslot &mdash; toets of activiteit
     uurBlock = `<div class="card-uur">
-      <div class="uur-toets">📋</div>
+      <div class="uur-toets">&#x1F4CB;</div>
       <div class="uur-label">toets</div>
     </div>`;
   } else if (hasArrow) {
     uurBlock = `<div class="card-uur">
       <div class="uur-arrow-wrap">
         <span class="uur-oud">${item.uur}</span>
-        <span class="uur-pijl">→</span>
+        <span class="uur-pijl">&rarr;</span>
         <span class="uur-nieuw">${item.uurNieuw}</span>
       </div>
       <div class="uur-label">uur</div>
@@ -461,9 +461,9 @@ function cardHTML(item) {
     </div>`;
   }
 
-  // Lokaal badges — only when there are lokalen (tijdwijziging with new room)
+  // Lokaal badges &mdash; only when there are lokalen (tijdwijziging with new room)
   const lokaalHTML = item.lokaalList.length
-    ? `<span class="sep">·</span>${item.lokaalList.map(l => `<span class="card-lokaal-badge">${l}</span>`).join(' ')}`
+    ? `<span class="sep">&middot;</span>${item.lokaalList.map(l => `<span class="card-lokaal-badge">${l}</span>`).join(' ')}`
     : '';
 
   // Label rechts
@@ -475,11 +475,11 @@ function cardHTML(item) {
       <div class="card-docent-naam">${item.docent}</div>
       <div class="card-meta">
         <span class="card-vak">${item.vak}</span>
-        <span class="sep">·</span>
+        <span class="sep">&middot;</span>
         <span class="card-klas">${item.klas}</span>
         ${lokaalHTML}
-        ${item.opmerking ? `<span class="sep">·</span><span style="font-size:13px;color:var(--muted)">${item.opmerking}</span>` : ''}
-        ${!item.isToday ? `<span class="sep">·</span><span class="dag-badge">morgen</span>` : ''}
+        ${item.opmerking ? `<span class="sep">&middot;</span><span style="font-size:13px;color:var(--muted)">${item.opmerking}</span>` : ''}
+        ${!item.isToday ? `<span class="sep">&middot;</span><span class="dag-badge">morgen</span>` : ''}
       </div>
     </div>
     <div class="card-right">
@@ -491,7 +491,7 @@ function cardHTML(item) {
 function colHTML(items, type) {
   if (!items.length) return `
     <div class="empty-state">
-      <div class="empty-icon">✓</div>
+      <div class="empty-icon">&#x2713;</div>
       <div class="empty-text">Geen ${type==='ziek'?'uitgevallen lessen':'tijdwijzigingen'} vandaag</div>
     </div>`;
   return `<div class="cards-grid">${items.map(cardHTML).join('')}</div>`;
@@ -506,7 +506,7 @@ function dotsHTML(totalPages, active) {
 
 function buildPage(bouw, ziekChunks, tijdChunks, subPage, _unused) {
   const isOb      = bouw === 'onderbouw';
-  const bouwLabel = isOb ? 'Onderbouw · Klas 1, 2 &amp; 3' : 'Bovenbouw · Klas 4 &amp; 5';
+  const bouwLabel = isOb ? 'Onderbouw &middot; Klas 1, 2 &amp; 3' : 'Bovenbouw &middot; Klas 4 &amp; 5';
   const bouwCls   = isOb ? 'onderbouw' : 'bovenbouw';
   const ziekCount = ziekChunks.flat().length;
   const tijdCount = tijdChunks.flat().length;
@@ -542,7 +542,7 @@ function buildPage(bouw, ziekChunks, tijdChunks, subPage, _unused) {
     <main>
       <div class="col">
         <div class="col-header">
-          <div class="col-icon ziek">🚫</div>
+          <div class="col-icon ziek">&#x1F6AB;</div>
           <div>
             <div class="col-label">Docenten</div>
             <div class="col-title">Uitgevallen lessen</div>
@@ -553,7 +553,7 @@ function buildPage(bouw, ziekChunks, tijdChunks, subPage, _unused) {
       </div>
       <div class="col">
         <div class="col-header">
-          <div class="col-icon tijd">🕐</div>
+          <div class="col-icon tijd">&#x1F550;</div>
           <div>
             <div class="col-label">Rooster</div>
             <div class="col-title">Tijdwijzigingen</div>
@@ -579,7 +579,7 @@ function buildPage(bouw, ziekChunks, tijdChunks, subPage, _unused) {
   return div;
 }
 
-// ── STATE ────────────────────────────────────────────────────
+// &#x2500;&#x2500; STATE &#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;
 const bouwDefs = ['onderbouw', 'bovenbouw'];
 let currentBouwIdx = 0;
 let sliding = false;
@@ -589,7 +589,7 @@ const pageState = {
   bovenbouw: { ziekChunks:[[]], tijdChunks:[[]], subPage:0, totalPages:1 },
 };
 
-// ── SLIDE ENGINE ─────────────────────────────────────────────
+// &#x2500;&#x2500; SLIDE ENGINE &#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;
 // Uses a separate fixed-position overlay for the incoming page.
 // Current page stays in #track. Incoming page slides in on top.
 // Zero risk of track being empty = zero black screens.
@@ -658,7 +658,7 @@ function replaceCurrent(bouw) {
   updateClocks();
 }
 
-// ── PROGRESS BAR ─────────────────────────────────────────────
+// &#x2500;&#x2500; PROGRESS BAR &#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;
 let progInterval;
 function startProgress(seconds) {
   clearInterval(progInterval);
@@ -671,7 +671,7 @@ function startProgress(seconds) {
   }, 1000);
 }
 
-// ── LOAD DATA ────────────────────────────────────────────────
+// &#x2500;&#x2500; LOAD DATA &#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;
 function loadData(data) {
   bouwDefs.forEach(bouw => {
     const f = data.filter(d => d.bouw === bouw);
@@ -685,7 +685,7 @@ function loadData(data) {
   replaceCurrent(bouwDefs[currentBouwIdx]);
 }
 
-// ── TIMERS ───────────────────────────────────────────────────
+// &#x2500;&#x2500; TIMERS &#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;
 // Bouw switch
 setInterval(() => {
   currentBouwIdx = (currentBouwIdx + 1) % 2;
@@ -693,7 +693,7 @@ setInterval(() => {
   startProgress(BOUW_SWITCH_S);
 }, BOUW_SWITCH_S * 1000);
 
-// Subpage flip (overflow cards) — beide kolommen synchroon
+// Subpage flip (overflow cards) &mdash; beide kolommen synchroon
 setInterval(() => {
   const bouw = bouwDefs[currentBouwIdx];
   const s = pageState[bouw];
@@ -712,11 +712,11 @@ async function init() {
   }
 }
 
-// ── BOOT ─────────────────────────────────────────────────────
-// Auto-scale to fit any viewport (GoBright iframe / preview)
+// &#x2500;&#x2500; BOOT &#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;
+// Auto-scale to fit any viewport (GoBright iframe / webOS)
 function autoScale() {
   const scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
-  document.documentElement.style.transform = `scale(${scale})`;
+  document.getElementById('stage').style.transform = `scale(${scale})`;
 }
 autoScale();
 window.addEventListener('resize', autoScale);
